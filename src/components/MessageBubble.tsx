@@ -32,27 +32,30 @@ const MessageBubble = ({ message }: MessageBubbleProps) => {
           remarkPlugins={[remarkGfm, remarkMath]}
           rehypePlugins={[rehypeKatex]}
           components={{
-            code({ node, inline, className, children, ...props }: any) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            code({ inline, className, children }: any) {
               const match = /language-(\w+)/.exec(className || '');
+              const codeString = String(children).replace(/\n$/, '');
+              
               return !inline && match ? (
                 <SyntaxHighlighter
-                  style={vscDarkPlus}
+                  style={vscDarkPlus as { [key: string]: React.CSSProperties }}
                   language={match[1]}
                   PreTag="div"
-                  {...props}
                 >
-                  {String(children).replace(/\n$/, '')}
+                  {codeString}
                 </SyntaxHighlighter>
               ) : (
-                <code className={className} {...props}>
+                <code className={className}>
                   {children}
                 </code>
               );
             },
-            table({ children, ...props }) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            table({ children }: any) {
               return (
                 <div className="table-wrapper">
-                  <table {...props}>{children}</table>
+                  <table>{children}</table>
                 </div>
               );
             },

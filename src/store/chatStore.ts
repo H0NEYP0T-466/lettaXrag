@@ -45,7 +45,7 @@ export const useChatStore = create<ChatState>()(
           const data = JSON.parse(str);
           // Convert timestamp strings back to Date objects
           if (data.state?.messages) {
-            data.state.messages = data.state.messages.map((msg: any) => ({
+            data.state.messages = data.state.messages.map((msg: Message) => ({
               ...msg,
               timestamp: new Date(msg.timestamp),
             }));
