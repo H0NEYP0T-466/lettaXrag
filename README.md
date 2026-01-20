@@ -8,28 +8,36 @@ A full-stack conversational AI system featuring **Isabella**, a sassy AI assista
 
 - **🎭 Personality**: Isabella - your sassy, confident AI assistant with attitude
 - **📚 RAG System**: FAISS-based document retrieval for knowledge-enhanced responses
-- **💬 Real-time Chat**: Beautiful, responsive chat interface
-- **📁 Document Upload**: Support for .txt, .md, .pdf, and .docx files
+- **💬 Real-time Chat**: Terminal-style chat interface with monospace fonts
+- **🎨 Rich Rendering**: Full support for Markdown, LaTeX, code syntax highlighting, and tables
+- **📁 Document Upload**: Support for .txt, .md, .pdf, and .docx files (backend API)
 - **🔍 Rich Logging**: Comprehensive colored console logs tracking every step
 - **💾 MongoDB Storage**: Persistent conversation history
 - **🔒 Security**: Updated dependencies with patched vulnerabilities
+- **📖 Letta Integration**: Optional personality engine (see [LETTA_INFO.md](LETTA_INFO.md))
+
+> **ℹ️ Learn about Letta**: For detailed information about Letta personality engine, how it works, and implementation details, see [LETTA_INFO.md](LETTA_INFO.md)
 
 ## 🏗️ Architecture
-
-### Frontend (React + TypeScript)
-- Modern React 19 with TypeScript
-- Zustand for state management
-- Axios for API communication
-- Beautiful gradient UI with animations
 
 ### Backend (Python FastAPI)
 - FastAPI with async support (v0.109.1+ - patched)
 - MongoDB for data persistence
 - FAISS-CPU for vector similarity search
 - Sentence-transformers for embeddings
-- ~~Letta for personality management~~ (disabled - see SECURITY.md)
+- Letta for personality management (optional - see [LETTA_INFO.md](LETTA_INFO.md))
 - LongCat LLM API integration
 - Rich library for beautiful console logging
+
+### Frontend (React + TypeScript)
+- Modern React 19 with TypeScript
+- Zustand for state management
+- Axios for API communication
+- Terminal-style UI with monospace fonts
+- React-Markdown for Markdown rendering
+- KaTeX for LaTeX math rendering
+- React-Syntax-Highlighter for code blocks
+- Full table rendering support
 
 ## 📋 Prerequisites
 
@@ -122,16 +130,33 @@ The frontend will start on `http://localhost:5173`
 ### Chat with Isabella
 
 1. Open your browser to `http://localhost:5173`
-2. Type your question in the input box
-3. Press Enter or click the send button
+2. Type your question in the terminal-style input box
+3. Press Enter or click [send]
 4. Isabella will respond using her personality and knowledge base!
+
+### Terminal-Style Interface
+
+The chat interface features:
+- **Black background** with green and cyan text (terminal aesthetic)
+- **Monospace font** (Courier New) throughout
+- **Minimal design** - no gradients, just clean text
+- **Rich content rendering**:
+  - Markdown formatting (headers, lists, bold, italic, links)
+  - LaTeX math equations (inline: `$...$` and display: `$$...$$`)
+  - Code blocks with syntax highlighting
+  - Tables with proper formatting
+  - Blockquotes and other Markdown features
 
 ### Upload Documents
 
-1. Click the "📤 Upload Document" button in the header
-2. Select a supported file (.txt, .md, .pdf, .docx)
-3. The system will automatically re-index the document
-4. Isabella can now use this knowledge in her responses!
+Documents can be uploaded via the API endpoint:
+
+```bash
+curl -X POST http://localhost:8000/api/upload \
+  -F "file=@/path/to/document.pdf"
+```
+
+The system will automatically re-index and Isabella can use this knowledge!
 
 ### View Sources
 
@@ -188,11 +213,19 @@ Get system statistics (message count, indexed documents)
 
 ### Change Isabella's Personality
 
-Edit `backend/services/letta_service.py`:
+For Letta-based personality, edit `backend/services/letta_service.py`:
 
 ```python
 self.persona = """Your custom personality here..."""
 ```
+
+For LLM-based personality (when Letta is disabled), edit `backend/services/llm_service.py`:
+
+```python
+system_prompt = """Your custom personality..."""
+```
+
+See [LETTA_INFO.md](LETTA_INFO.md) for detailed information about personality management.
 
 ### Adjust RAG Settings
 
