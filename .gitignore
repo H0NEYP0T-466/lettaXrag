@@ -41,6 +41,7 @@ backend/storage/*.json
 backend/storage/*.pkl
 backend/data/*
 !backend/data/.gitkeep
+!backend/data/README.md
 
 # IDEs
 .vscode/
