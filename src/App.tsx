@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect } from 'react';
+import ChatInterface from './components/ChatInterface';
+import { useChatStore } from './store/chatStore';
+import { chatAPI } from './services/api';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { setConnected } = useChatStore();
+
+  useEffect(() => {
+    // Check backend health on mount and periodically
+    const checkHealth = async () => {
+      try {
+        await chatAPI.getHealth();
+        setConnected(true);
+      } catch (error) {
+        console.error('Health check failed:', error);
+        setConnected(false);
+      }
+    };
+
+    checkHealth();
+    const interval = setInterval(checkHealth, 30000); // Check every 30s
+
+    return () => clearInterval(interval);
+  }, [setConnected]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="app">
+      <ChatInterface />
+    </div>
+  );
 }
 
-export default App
+export default App;

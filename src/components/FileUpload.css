@@ -1,0 +1,39 @@
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.upload-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.upload-button:hover {
+  transform: scale(1.02);
+}
+
+.upload-message {
+  font-size: 0.85rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
