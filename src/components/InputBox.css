@@ -1,54 +1,54 @@
 .input-box {
   display: flex;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: var(--input-bg);
-  border-top: 1px solid var(--border-color);
-  align-items: flex-end;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #0a0a0a;
+  border-top: 1px solid #1a1a1a;
+  align-items: center;
 }
 
 .input-textarea {
   flex: 1;
-  min-height: 44px;
-  max-height: 120px;
-  padding: 0.75rem;
-  border: 2px solid var(--border-color);
-  border-radius: 12px;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 1rem;
-  font-family: inherit;
-  resize: vertical;
+  min-height: 36px;
+  max-height: 100px;
+  padding: 0.5rem;
+  border: 1px solid #1a1a1a;
+  background: #000000;
+  color: #00ff00;
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+  resize: none;
   transition: border-color 0.2s;
 }
 
 .input-textarea:focus {
   outline: none;
-  border-color: var(--accent-color);
+  border-color: #333;
 }
 
 .input-textarea::placeholder {
-  color: var(--text-secondary);
+  color: #333;
 }
 
 .send-button {
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: #00ff00;
+  border: 1px solid #1a1a1a;
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
   cursor: pointer;
-  transition: transform 0.2s, opacity 0.2s;
-  min-width: 60px;
-  height: 44px;
+  transition: all 0.2s;
+  min-width: 50px;
+  height: 36px;
 }
 
 .send-button:hover:not(:disabled) {
-  transform: scale(1.05);
+  border-color: #333;
+  background: #0a0a0a;
 }
 
 .send-button:disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: not-allowed;
 }

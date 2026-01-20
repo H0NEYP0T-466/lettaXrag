@@ -37,6 +37,28 @@ export const useChatStore = create<ChatState>()(
         sessionId: state.sessionId,
         isDarkMode: state.isDarkMode,
       }),
+      // Handle Date serialization/deserialization
+      storage: {
+        getItem: (name) => {
+          const str = localStorage.getItem(name);
+          if (!str) return null;
+          const data = JSON.parse(str);
+          // Convert timestamp strings back to Date objects
+          if (data.state?.messages) {
+            data.state.messages = data.state.messages.map((msg: Message) => ({
+              ...msg,
+              timestamp: new Date(msg.timestamp),
+            }));
+          }
+          return data;
+        },
+        setItem: (name, value) => {
+          localStorage.setItem(name, JSON.stringify(value));
+        },
+        removeItem: (name) => {
+          localStorage.removeItem(name);
+        },
+      },
     }
   )
 );
