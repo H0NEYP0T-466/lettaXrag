@@ -1,5 +1,12 @@
-from letta import create_client, LettaClient
-from letta.schemas.memory import ChatMemory
+try:
+    from letta import create_client, LettaClient
+    from letta.schemas.memory import ChatMemory
+    LETTA_AVAILABLE = True
+except ImportError:
+    LETTA_AVAILABLE = False
+    LettaClient = None
+    ChatMemory = None
+
 from config import settings
 from utils.logger import log_info, log_error, log_letta_processing
 from typing import Optional
@@ -26,6 +33,13 @@ When you don't know something, you own it with style."""
     def initialize(self):
         """Initialize Letta client and agent"""
         try:
+            if not LETTA_AVAILABLE:
+                log_info("⚠️  Letta library not installed (excluded due to security vulnerabilities)")
+                log_info("Isabella will work without personality processing")
+                self.client = None
+                self.agent_id = None
+                return
+            
             log_info("Initializing Letta personality engine...")
             
             # Create Letta client

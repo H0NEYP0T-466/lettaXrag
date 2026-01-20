@@ -1,16 +1,18 @@
 # LettaXRAG - Conversational AI with RAG & Personality
 
-A full-stack conversational AI system featuring **Isabella**, a sassy AI assistant powered by RAG (Retrieval-Augmented Generation), personality management via Letta, and comprehensive logging.
+A full-stack conversational AI system featuring **Isabella**, a sassy AI assistant powered by RAG (Retrieval-Augmented Generation) and comprehensive logging.
+
+> **⚠️ Security Note**: Letta personality engine is disabled by default due to known vulnerabilities. See [SECURITY.md](SECURITY.md) for details. Isabella's personality is maintained through LLM system prompts.
 
 ## 🌟 Features
 
-- **🎭 Personality Engine**: Isabella - your sassy, confident AI assistant with attitude
+- **🎭 Personality**: Isabella - your sassy, confident AI assistant with attitude
 - **📚 RAG System**: FAISS-based document retrieval for knowledge-enhanced responses
 - **💬 Real-time Chat**: Beautiful, responsive chat interface
 - **📁 Document Upload**: Support for .txt, .md, .pdf, and .docx files
 - **🔍 Rich Logging**: Comprehensive colored console logs tracking every step
 - **💾 MongoDB Storage**: Persistent conversation history
-- **🎨 Dark/Light Mode**: Customizable theme (coming soon)
+- **🔒 Security**: Updated dependencies with patched vulnerabilities
 
 ## 🏗️ Architecture
 
@@ -21,11 +23,11 @@ A full-stack conversational AI system featuring **Isabella**, a sassy AI assista
 - Beautiful gradient UI with animations
 
 ### Backend (Python FastAPI)
-- FastAPI with async support
+- FastAPI with async support (v0.109.1+ - patched)
 - MongoDB for data persistence
 - FAISS-CPU for vector similarity search
 - Sentence-transformers for embeddings
-- Letta for personality management
+- ~~Letta for personality management~~ (disabled - see SECURITY.md)
 - LongCat LLM API integration
 - Rich library for beautiful console logging
 
@@ -271,10 +273,20 @@ VITE_API_URL=http://localhost:8001
 
 ## 🔒 Security Notes
 
-- Never commit your `.env` file
-- Keep your API keys secure
-- Use environment-specific CORS settings in production
-- Validate file uploads in production environments
+⚠️ **Important**: Please review [SECURITY.md](SECURITY.md) for comprehensive security information.
+
+### Quick Security Checklist
+
+- ✅ **Dependencies Updated**: All known vulnerabilities patched
+- ⚠️ **Letta Disabled**: Library has unpatched vulnerabilities (see SECURITY.md)
+- 🔒 **Environment Variables**: Never commit your `.env` file
+- 🔑 **API Keys**: Keep your API keys secure and rotate regularly
+- 🌐 **CORS**: Use environment-specific CORS settings in production
+- 📁 **File Uploads**: Implement size limits and validation in production
+- 🔐 **Authentication**: Add user authentication before production deployment
+- 🛡️ **Rate Limiting**: Implement rate limiting for production use
+
+**For Production Deployment**: See the production security checklist in [SECURITY.md](SECURITY.md)
 
 ## 📝 License
 
