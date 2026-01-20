@@ -1,21 +1,21 @@
 .input-box {
   display: flex;
   gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  padding: 1rem 1rem;
   background: #0a0a0a;
-  border-top: 1px solid #1a1a1a;
+  border-top: 2px solid #1a1a1a;
   align-items: center;
 }
 
 .input-textarea {
   flex: 1;
-  min-height: 36px;
-  max-height: 100px;
-  padding: 0.5rem;
+  min-height: 40px;
+  max-height: 120px;
+  padding: 0.6rem;
   border: 1px solid #1a1a1a;
   background: #000000;
-  color: #00ff00;
-  font-size: 0.85rem;
+  color: #00ff88;
+  font-size: 1rem;
   font-family: 'Courier New', monospace;
   resize: none;
   transition: border-color 0.2s;
@@ -23,28 +23,28 @@
 
 .input-textarea:focus {
   outline: none;
-  border-color: #333;
+  border-color: #00ff88;
 }
 
 .input-textarea::placeholder {
-  color: #333;
+  color: #444;
 }
 
 .send-button {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   background: transparent;
-  color: #00ff00;
+  color: #00ff88;
   border: 1px solid #1a1a1a;
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-family: 'Courier New', monospace;
   cursor: pointer;
   transition: all 0.2s;
-  min-width: 50px;
-  height: 36px;
+  min-width: 60px;
+  height: 40px;
 }
 
 .send-button:hover:not(:disabled) {
-  border-color: #333;
+  border-color: #00ff88;
   background: #0a0a0a;
 }
 
