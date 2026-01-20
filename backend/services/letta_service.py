@@ -34,7 +34,7 @@ When you don't know something, you own it with style."""
         """Initialize Letta client and agent"""
         try:
             if not LETTA_AVAILABLE:
-                log_info("⚠️  Letta library not installed (excluded due to security vulnerabilities)")
+                log_info("⚠️  Letta library not installed")
                 log_info("Isabella will work without personality processing")
                 self.client = None
                 self.agent_id = None

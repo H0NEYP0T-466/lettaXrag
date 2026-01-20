@@ -25,7 +25,7 @@ const InputBox = ({ onSend, disabled }: InputBoxProps) => {
 
   return (
     <div className="input-box">
-      <span style={{ color: '#00ff00', fontFamily: 'Courier New, monospace' }}>$</span>
+      <span style={{ color: '#00ff88', fontFamily: 'Courier New, monospace' }}>$</span>
       <textarea
         className="input-textarea"
         value={message}

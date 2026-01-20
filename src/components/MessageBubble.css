@@ -1,12 +1,12 @@
 .message-bubble {
   display: flex;
   flex-direction: column;
-  margin-bottom: 0.5rem;
-  padding: 0.75rem;
-  border: 1px solid #1a1a1a;
+  margin-bottom: 1rem;
+  padding: 0;
+  border: none;
   max-width: 100%;
   font-family: 'Courier New', monospace;
-  font-size: 0.85rem;
+  font-size: 1rem;
   animation: fadeIn 0.2s ease-out;
 }
 
@@ -20,44 +20,45 @@
 }
 
 .message-bubble.user {
-  align-self: flex-end;
-  background: #0a0a0a;
-  color: #00ff00;
-  border-left: 2px solid #00ff00;
-  margin-left: auto;
+  align-self: flex-start;
+  background: transparent;
+  color: #00ff88;
+  border-left: none;
+  margin-left: 0;
 }
 
 .message-bubble.isabella {
   align-self: flex-start;
-  background: #0a0a0a;
+  background: transparent;
   color: #00d4ff;
-  border-left: 2px solid #00d4ff;
-  margin-right: auto;
+  border-left: none;
+  margin-right: 0;
 }
 
 .message-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
-  font-size: 0.75rem;
-  opacity: 0.7;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+  opacity: 0.85;
 }
 
 .message-sender {
-  font-weight: 600;
+  font-weight: 700;
   font-family: 'Courier New', monospace;
 }
 
 .message-time {
-  font-size: 0.7rem;
-  opacity: 0.5;
+  font-size: 0.85rem;
+  opacity: 0.6;
 }
 
 .message-content {
-  line-height: 1.5;
+  line-height: 1.6;
   word-wrap: break-word;
-  font-size: 0.85rem;
+  font-size: 1rem;
+  padding-left: 0.5rem;
 }
 
 /* Markdown styling */
@@ -87,10 +88,10 @@
 
 .message-content code {
   background: #1a1a1a;
-  padding: 0.2rem 0.4rem;
+  padding: 0.2rem 0.5rem;
   border-radius: 3px;
   font-family: 'Courier New', monospace;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
 }
 
 .message-content pre {
@@ -114,13 +115,13 @@
   border-collapse: collapse;
   width: 100%;
   margin: 0.5rem 0;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
 }
 
 .message-content th,
 .message-content td {
   border: 1px solid #333;
-  padding: 0.4rem 0.6rem;
+  padding: 0.5rem 0.75rem;
   text-align: left;
 }
 
@@ -145,34 +146,36 @@
 .message-sources {
   margin-top: 0.5rem;
   padding-top: 0.5rem;
-  border-top: 1px solid #1a1a1a;
+  padding-left: 0.5rem;
+  border-top: none;
 }
 
 .sources-toggle {
   background: transparent;
-  border: 1px solid #333;
+  border: 1px solid #444;
   color: inherit;
-  padding: 0.3rem 0.6rem;
+  padding: 0.4rem 0.8rem;
   cursor: pointer;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   font-family: 'Courier New', monospace;
   transition: border-color 0.2s;
 }
 
 .sources-toggle:hover {
-  border-color: #666;
+  border-color: #00ff88;
 }
 
 .sources-list {
   margin-top: 0.5rem;
   padding: 0.5rem;
-  background: #0a0a0a;
-  border: 1px solid #1a1a1a;
-  font-size: 0.75rem;
+  background: transparent;
+  border: none;
+  border-left: 2px solid #444;
+  font-size: 0.9rem;
 }
 
 .source-item {
-  padding: 0.2rem 0;
+  padding: 0.3rem 0;
   font-family: 'Courier New', monospace;
-  opacity: 0.8;
+  opacity: 0.85;
 }
