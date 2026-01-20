@@ -25,12 +25,13 @@ const InputBox = ({ onSend, disabled }: InputBoxProps) => {
 
   return (
     <div className="input-box">
+      <span style={{ color: '#00ff00', fontFamily: 'Courier New, monospace' }}>$</span>
       <textarea
         className="input-textarea"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyPress={handleKeyPress}
-        placeholder="Ask Isabella anything..."
+        placeholder="enter message..."
         disabled={disabled}
         rows={1}
       />
@@ -39,7 +40,7 @@ const InputBox = ({ onSend, disabled }: InputBoxProps) => {
         onClick={handleSend}
         disabled={!message.trim() || disabled}
       >
-        {disabled ? '...' : '➤'}
+        {disabled ? '...' : '[send]'}
       </button>
     </div>
   );

@@ -1,35 +1,37 @@
 .message-bubble {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1rem;
-  padding: 1rem;
-  border-radius: 12px;
-  max-width: 70%;
-  animation: slideIn 0.3s ease-out;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #1a1a1a;
+  max-width: 85%;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  animation: fadeIn 0.2s ease-out;
 }
 
-@keyframes slideIn {
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .message-bubble.user {
   align-self: flex-end;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #0a0a0a;
+  color: #00ff00;
+  border-left: 2px solid #00ff00;
   margin-left: auto;
 }
 
 .message-bubble.isabella {
   align-self: flex-start;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
+  background: #0a0a0a;
+  color: #00d4ff;
+  border-left: 2px solid #00d4ff;
   margin-right: auto;
 }
 
@@ -38,54 +40,139 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
-  font-size: 0.85rem;
-  opacity: 0.9;
-}
-
-.message-sender {
-  font-weight: 600;
-}
-
-.message-time {
   font-size: 0.75rem;
   opacity: 0.7;
 }
 
+.message-sender {
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+.message-time {
+  font-size: 0.7rem;
+  opacity: 0.5;
+}
+
 .message-content {
-  line-height: 1.6;
+  line-height: 1.5;
   word-wrap: break-word;
+  font-size: 0.85rem;
+}
+
+/* Markdown styling */
+.message-content p {
+  margin: 0.5rem 0;
+}
+
+.message-content h1,
+.message-content h2,
+.message-content h3,
+.message-content h4,
+.message-content h5,
+.message-content h6 {
+  margin: 0.75rem 0 0.5rem 0;
+  font-weight: bold;
+}
+
+.message-content ul,
+.message-content ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.message-content li {
+  margin: 0.25rem 0;
+}
+
+.message-content code {
+  background: #1a1a1a;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+}
+
+.message-content pre {
+  margin: 0.5rem 0;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.message-content pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* Table styling */
+.table-wrapper {
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+
+.message-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.5rem 0;
+  font-size: 0.8rem;
+}
+
+.message-content th,
+.message-content td {
+  border: 1px solid #333;
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+
+.message-content th {
+  background: #1a1a1a;
+  font-weight: bold;
+}
+
+.message-content tr:nth-child(even) {
+  background: #0d0d0d;
+}
+
+/* LaTeX/Math styling */
+.message-content .katex {
+  font-size: 1em;
+}
+
+.message-content .katex-display {
+  margin: 0.5rem 0;
 }
 
 .message-sources {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #1a1a1a;
 }
 
 .sources-toggle {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  background: transparent;
+  border: 1px solid #333;
+  color: inherit;
+  padding: 0.3rem 0.6rem;
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: background 0.2s;
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  transition: border-color 0.2s;
 }
 
 .sources-toggle:hover {
-  background: rgba(255, 255, 255, 0.3);
+  border-color: #666;
 }
 
 .sources-list {
   margin-top: 0.5rem;
   padding: 0.5rem;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  font-size: 0.75rem;
 }
 
 .source-item {
-  padding: 0.25rem 0;
-  font-size: 0.85rem;
-  opacity: 0.9;
+  padding: 0.2rem 0;
+  font-family: 'Courier New', monospace;
+  opacity: 0.8;
 }
