@@ -78,11 +78,24 @@ nano .env  # or use your favorite editor
 ```env
 MONGODB_URI=mongodb://localhost:27017/lettaXrag
 LONGCAT_API_KEY=your_actual_api_key_here
-LETTA_API_KEY=your_letta_key_here  # Optional
+
+# Letta - Local Server (Recommended)
+LETTA_BASE_URL=http://localhost:8283
+# No LETTA_API_KEY needed for local server
+
+# Letta - Cloud Server (Alternative)
+# LETTA_BASE_URL=https://api.letta.com
+# LETTA_API_KEY=your_letta_cloud_api_key_here
+
+# Optional
 DATA_FOLDER=./data
 FAISS_INDEX_PATH=./storage/faiss_index.bin
 LOG_LEVEL=DEBUG
 ```
+
+> **📖 Letta Local Server Setup:** If you want to use Letta personality engine with a local server,
+> see [backend/letta.txt](backend/letta.txt) for detailed setup instructions including PostgreSQL
+> configuration and troubleshooting.
 
 ### 3. Frontend Setup
 
@@ -294,6 +307,17 @@ rm backend/storage/*
 
 ### Letta Initialization Fails
 The system will continue without Letta if initialization fails. Isabella will still work but without personality processing.
+
+**Common causes:**
+- Letta server not running (if using local server)
+- Wrong LETTA_BASE_URL configuration
+- PostgreSQL not running (if Letta is configured to use it)
+
+**Solutions:**
+- See [backend/letta.txt](backend/letta.txt) for comprehensive Letta setup guide
+- Check your `.env` file has: `LETTA_BASE_URL=http://localhost:8283`
+- Make sure Letta server is running: `letta server`
+- Or disable Letta by commenting out LETTA_BASE_URL in `.env`
 
 ### Port Already in Use
 ```bash

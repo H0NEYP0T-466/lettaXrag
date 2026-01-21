@@ -42,8 +42,20 @@ When you don't know something, you own it with style."""
             
             log_info("Initializing Letta personality engine...")
             
-            # Create Letta client
-            self.client = Letta()
+            # Create Letta client with configured base URL
+            # By default (from config.py), uses local server at http://localhost:8283
+            # Can be overridden via LETTA_BASE_URL environment variable
+            client_kwargs = {}
+            if settings.letta_base_url:
+                client_kwargs['base_url'] = settings.letta_base_url
+                log_info(f"Configuring Letta client for: {settings.letta_base_url}")
+            if settings.letta_api_key:
+                client_kwargs['token'] = settings.letta_api_key
+                log_info("✅ Using Letta API key for authentication")
+            
+            self.client = Letta(**client_kwargs)
+            
+            log_info(f"✅ Connected to Letta server: {settings.letta_base_url or 'default'}")
             
             # Check if agent already exists
             agents_response = self.client.agents.list(name=self.agent_name)
