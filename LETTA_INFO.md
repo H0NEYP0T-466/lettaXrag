@@ -125,10 +125,20 @@ You use modern slang naturally but not excessively."""
 
 Located in: `/backend/services/letta_service.py`
 
+**Updated for Letta 0.16.x API:**
+
 ```python
+# New imports for Letta 0.16.x
+try:
+    from letta_client import Letta  # Client from letta_client package
+    from letta import ChatMemory      # Schemas from letta package
+    LETTA_AVAILABLE = True
+except ImportError:
+    LETTA_AVAILABLE = False
+
 class LettaService:
     def __init__(self):
-        self.client = None
+        self.client = None  # Now uses Letta class instead of LettaClient
         self.agent_id = None
         self.agent_name = "Isabella"
         
@@ -142,6 +152,14 @@ class LettaService:
         
         self.human_description = "A user seeking information and good conversation."
 ```
+
+**Key API Changes in Letta 0.16.x:**
+- Client initialization: `Letta()` instead of `create_client()`
+- List agents: `client.agents.list(name="name")` instead of `client.list_agents()`
+- Create agent: `client.agents.create(name="name", memory_blocks=[...])` instead of `client.create_agent()`
+- Send message: `client.agents.messages.create(agent_id="id", input="message")` instead of `client.send_message()`
+- Delete agent: `client.agents.delete(agent_id)` instead of `client.delete_agent()`
+
 
 ### Integration Flow
 
@@ -207,16 +225,16 @@ LOG_LEVEL=DEBUG
 
 ### Installation
 
-#### Option 1: Install Letta (Not Recommended - Security Vulnerabilities)
+#### Option 1: Install Letta (Recommended for Latest Version)
 
 ```bash
 cd backend
-pip install letta>=0.3.0  # Has known vulnerabilities
+pip install letta>=0.16.0
 ```
 
-⚠️ **Security Warning**: Letta versions ≤ 0.3.17 have known vulnerabilities. See [SECURITY.md](SECURITY.md).
+✅ **Updated:** Now requires Letta 0.16.0 or later with the new API structure.
 
-#### Option 2: Use Without Letta (Recommended)
+#### Option 2: Use Without Letta
 
 The system works without Letta installed. Personality is maintained through:
 - LLM system prompts in `llm_service.py`
@@ -369,26 +387,54 @@ Isabella will work without personality processing
 
 ## Advanced Topics
 
-### Custom Agent Creation
+### Custom Agent Creation (Updated for Letta 0.16.x)
 
 ```python
-from letta import create_client
-from letta.schemas.memory import ChatMemory
+from letta_client import Letta
 
-client = create_client()
+client = Letta()
 
-agent = client.create_agent(
+# Create memory blocks
+memory_blocks = [
+    {
+        "label": "persona",
+        "value": "Custom personality description",
+        "template": False
+    },
+    {
+        "label": "human",
+        "value": "User description",
+        "template": False
+    }
+]
+
+# Create agent with new API
+agent = client.agents.create(
     name="CustomAgent",
-    memory=ChatMemory(
-        human="User description",
-        persona="Custom personality",
-    ),
-    tools=[],  # Optional custom tools
+    memory_blocks=memory_blocks,
     system="Custom system instructions"
 )
 ```
 
-### Memory Management
+### Memory Management (Updated for Letta 0.16.x)
+
+```python
+# List agents
+agents = client.agents.list(name="CustomAgent")
+
+# Get specific agent
+agent = client.agents.retrieve(agent_id=agent.id)
+
+# Update agent (delete and recreate)
+client.agents.delete(agent_id=agent.id)
+# Then create new agent with updated settings
+
+# Send message to agent
+response = client.agents.messages.create(
+    agent_id=agent.id,
+    input="Your message here"
+)
+```
 
 ```python
 # Update agent memory
@@ -402,18 +448,31 @@ client.update_agent_memory(
 client.delete_agent(agent_id)
 ```
 
-### Multi-Agent Systems
+### Multi-Agent Systems (Updated for Letta 0.16.x)
 
 ```python
+from letta_client import Letta
+
+client = Letta()
+
 # Create different agents for different purposes
-support_agent = client.create_agent(name="Support", ...)
-creative_agent = client.create_agent(name="Creative", ...)
+support_memory = [
+    {"label": "persona", "value": "Helpful support agent", "template": False},
+    {"label": "human", "value": "User seeking help", "template": False}
+]
+creative_memory = [
+    {"label": "persona", "value": "Creative and imaginative assistant", "template": False},
+    {"label": "human", "value": "User seeking creative ideas", "template": False}
+]
+
+support_agent = client.agents.create(name="Support", memory_blocks=support_memory)
+creative_agent = client.agents.create(name="Creative", memory_blocks=creative_memory)
 
 # Route based on context
 if user_needs_help:
-    response = support_agent.send_message(message)
+    response = client.agents.messages.create(agent_id=support_agent.id, input=message)
 else:
-    response = creative_agent.send_message(message)
+    response = client.agents.messages.create(agent_id=creative_agent.id, input=message)
 ```
 
 ---
@@ -462,6 +521,6 @@ If not using Letta:
 
 ---
 
-**Last Updated**: January 2026  
+**Last Updated**: January 2026 (Updated for Letta 0.16.x API)  
 **Author**: LettaXRAG Team  
 **Status**: Educational/Development Use Only
