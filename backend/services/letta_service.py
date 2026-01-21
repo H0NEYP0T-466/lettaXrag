@@ -1,10 +1,10 @@
 try:
-    from letta import create_client, LettaClient
-    from letta.schemas.memory import ChatMemory
+    from letta_client import Letta
+    from letta import ChatMemory
     LETTA_AVAILABLE = True
 except ImportError:
     LETTA_AVAILABLE = False
-    LettaClient = None
+    Letta = None
     ChatMemory = None
 
 from config import settings
@@ -16,7 +16,7 @@ class LettaService:
     """Letta personality engine integration"""
     
     def __init__(self):
-        self.client: Optional[LettaClient] = None
+        self.client: Optional[Letta] = None
         self.agent_id: Optional[str] = None
         self.agent_name = "Isabella"
         
@@ -43,30 +43,43 @@ When you don't know something, you own it with style."""
             log_info("Initializing Letta personality engine...")
             
             # Create Letta client
-            self.client = create_client()
+            self.client = Letta()
             
             # Check if agent already exists
-            agents = self.client.list_agents()
+            agents_response = self.client.agents.list(name=self.agent_name)
             existing_agent = None
-            for agent in agents:
-                if agent.name == self.agent_name:
-                    existing_agent = agent
-                    break
+            
+            # Check if any agents match our name
+            if hasattr(agents_response, 'data') and agents_response.data:
+                for agent in agents_response.data:
+                    if agent.name == self.agent_name:
+                        existing_agent = agent
+                        break
             
             if existing_agent:
                 self.agent_id = existing_agent.id
                 log_info(f"Using existing Letta agent: {self.agent_name} (ID: {self.agent_id})")
             else:
-                # Create new agent
+                # Create new agent with personality
                 log_info(f"Creating new Letta agent: {self.agent_name}")
                 
-                # Create agent with personality
-                agent = self.client.create_agent(
+                # Create memory blocks for the agent
+                memory_blocks = [
+                    {
+                        "label": "persona",
+                        "value": self.persona,
+                        "template": False
+                    },
+                    {
+                        "label": "human",
+                        "value": self.human_description,
+                        "template": False
+                    }
+                ]
+                
+                agent = self.client.agents.create(
                     name=self.agent_name,
-                    memory=ChatMemory(
-                        human=self.human_description,
-                        persona=self.persona,
-                    ),
+                    memory_blocks=memory_blocks,
                 )
                 
                 self.agent_id = agent.id
@@ -89,27 +102,32 @@ When you don't know something, you own it with style."""
             
             log_info(f"Processing message through Letta agent {self.agent_name}")
             
-            # Send message to Letta agent
-            response = self.client.send_message(
+            # Send message to Letta agent using the new API
+            response = self.client.agents.messages.create(
                 agent_id=self.agent_id,
-                message=user_message,
-                role="user"
+                input=user_message,
             )
             
             # Extract the assistant's response
-            # Letta returns a list of messages
+            # Letta returns a response object with messages
             processed_message = user_message
-            if response and len(response.messages) > 0:
+            if hasattr(response, 'messages') and response.messages:
                 # Get the last assistant message
                 for msg in reversed(response.messages):
-                    if hasattr(msg, 'message_type') and msg.message_type == 'assistant_message':
+                    # Check for assistant messages
+                    if hasattr(msg, 'role') and msg.role == 'assistant':
                         if hasattr(msg, 'text') and msg.text:
                             processed_message = msg.text
                             break
-                    elif hasattr(msg, 'role') and msg.role == 'assistant':
-                        if hasattr(msg, 'content') and msg.content:
-                            processed_message = msg.content
+                    # Also check for message_type attribute
+                    elif hasattr(msg, 'message_type') and 'assistant' in str(msg.message_type).lower():
+                        if hasattr(msg, 'text') and msg.text:
+                            processed_message = msg.text
                             break
+                    # Check for content attribute
+                    elif hasattr(msg, 'content') and msg.content:
+                        processed_message = msg.content
+                        break
             
             log_letta_processing(processed_message)
             return processed_message
@@ -124,7 +142,7 @@ When you don't know something, you own it with style."""
         try:
             if self.client and self.agent_id:
                 # Delete and recreate agent
-                self.client.delete_agent(self.agent_id)
+                self.client.agents.delete(self.agent_id)
                 self.initialize()
                 log_info("Agent memory reset")
         except Exception as e:
