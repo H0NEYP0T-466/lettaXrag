@@ -249,7 +249,13 @@ Expected output:
 ✓ Test Letta Connection
 ------------------------
 In Python:
+    # Note: Import statement may vary based on Letta package version
+    # For Letta 0.16.x, use the import from letta_service.py:
     from letta_client import Letta
+    
+    # Or try standard import if above doesn't work:
+    # from letta import Letta
+    
     client = Letta(base_url="http://localhost:8283")
     agents = client.agents.list()
     print("Connected successfully!")
