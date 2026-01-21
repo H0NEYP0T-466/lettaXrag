@@ -213,15 +213,23 @@ Create a `.env` file in the `backend` directory:
 MONGODB_URI=mongodb://localhost:27017/lettaXrag
 LONGCAT_API_KEY=your_longcat_api_key
 
-# Optional - Letta Configuration
-LETTA_API_KEY=your_letta_api_key  # If using Letta Cloud
-LETTA_BASE_URL=http://localhost:8283  # If using local Letta server
+# Letta Configuration
+# For local Letta server (recommended):
+LETTA_BASE_URL=http://localhost:8283  # Default
+# No LETTA_API_KEY needed for local server
+
+# For Letta Cloud (alternative):
+# LETTA_BASE_URL=https://api.letta.com
+# LETTA_API_KEY=your_letta_cloud_api_key
 
 # Other settings
 DATA_FOLDER=./data
 FAISS_INDEX_PATH=./storage/faiss_index.bin
 LOG_LEVEL=DEBUG
 ```
+
+> **📖 Local Server Setup:** For detailed instructions on setting up a local Letta server, 
+> including troubleshooting PostgreSQL issues, see [backend/letta.txt](backend/letta.txt)
 
 ### Installation
 
