@@ -319,17 +319,6 @@ The system will continue without Letta if initialization fails. Isabella will st
 - Make sure Letta server is running: `letta server`
 - Or disable Letta by commenting out LETTA_BASE_URL in `.env`
 
-**Common causes:**
-- Letta server not running (if using local server)
-- Wrong LETTA_BASE_URL configuration
-- PostgreSQL not running (if Letta is configured to use it)
-
-**Solutions:**
-- See [backend/letta.txt](backend/letta.txt) for comprehensive Letta setup guide
-- Check your `.env` file has: `LETTA_BASE_URL=http://localhost:8283`
-- Make sure Letta server is running: `letta server`
-- Or disable Letta by commenting out LETTA_BASE_URL in `.env`
-
 ### Port Already in Use
 ```bash
 # Change backend port in main.py
