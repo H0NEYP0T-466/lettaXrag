@@ -43,8 +43,8 @@ When you don't know something, you own it with style."""
             log_info("Initializing Letta personality engine...")
             
             # Create Letta client with configured base URL
-            # Default: Use local server at http://localhost:8283
-            # If LETTA_BASE_URL is not set, Letta client will use its default (cloud)
+            # By default (from config.py), uses local server at http://localhost:8283
+            # Can be overridden via LETTA_BASE_URL environment variable
             client_kwargs = {}
             if settings.letta_base_url:
                 client_kwargs['base_url'] = settings.letta_base_url
