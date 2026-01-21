@@ -11,10 +11,6 @@ class LLMService:
             base_url="https://api.longcat.chat/openai"
         )
         self.model = "LongCat-Flash-Chat"
-        self.system_instruction = (
-            "Your name is Isabella. You are a sassy, confident AI assistant who helps users "
-            "with their questions using retrieved knowledge."
-        )
 
     async def generate_response(self, prompt, rag_context=None, temperature=0.7, max_tokens=1000, use_memory=True):
         """Generate response from LLM with optional Letta memory."""
