@@ -1,0 +1,366 @@
+================================================================================
+                    LETTA LOCAL SERVER SETUP GUIDE
+================================================================================
+
+This guide will help you set up and run Letta server locally for the 
+LettaXRAG application. Follow these steps carefully to avoid connection errors.
+
+================================================================================
+OVERVIEW
+================================================================================
+
+The error you're seeing:
+  "HTTP Request: GET https://api.letta.com/v1/agents/?name=Isabella 
+   HTTP/1.1 401 Unauthorized"
+
+This happens because the Letta client is trying to connect to the cloud-based
+Letta server (api.letta.com) instead of your local server.
+
+SOLUTION: We need to:
+1. Set up PostgreSQL (required by Letta server)
+2. Configure Letta to use SQLite instead (simpler alternative)
+3. Run the local Letta server
+4. Configure LettaXRAG to connect to the local server
+
+================================================================================
+OPTION 1: USING SQLITE (RECOMMENDED - EASIEST)
+================================================================================
+
+SQLite is simpler and doesn't require PostgreSQL installation.
+
+Step 1: Configure Letta to Use SQLite
+--------------------------------------
+Run the following command to configure Letta:
+
+    letta configure
+
+When prompted, choose:
+- Storage backend: "local" or "sqlite"
+- Default model provider: Choose your preferred LLM provider
+- Base URL: Leave as default (http://localhost:8283)
+
+This creates a Letta configuration in your home directory:
+- Linux/Mac: ~/.letta/config
+- Windows: %USERPROFILE%\.letta\config
+
+Step 2: Start Letta Server
+---------------------------
+    letta server
+
+Expected output:
+    [[ Letta server // v0.16.2 ]]
+    Server running at: http://localhost:8283
+
+Step 3: Configure LettaXRAG
+----------------------------
+In your backend/.env file, ensure you have:
+
+    LETTA_BASE_URL=http://localhost:8283
+    # LETTA_API_KEY not needed for local server
+
+Step 4: Run LettaXRAG Backend
+------------------------------
+    cd backend
+    python main.py
+
+You should see:
+    ✅ Connecting to local Letta server: http://localhost:8283
+    ✅ Letta personality engine ready!
+
+================================================================================
+OPTION 2: USING POSTGRESQL (ADVANCED)
+================================================================================
+
+If you prefer PostgreSQL or need its features:
+
+Step 1: Install PostgreSQL
+---------------------------
+Ubuntu/Debian:
+    sudo apt update
+    sudo apt install postgresql postgresql-contrib
+
+macOS (with Homebrew):
+    brew install postgresql
+    brew services start postgresql
+
+Windows:
+    Download installer from: https://www.postgresql.org/download/windows/
+
+Step 2: Create Letta Database
+------------------------------
+    # Switch to postgres user
+    sudo -u postgres psql
+
+    # In PostgreSQL shell:
+    CREATE DATABASE letta;
+    CREATE USER letta_user WITH PASSWORD 'your_password';
+    GRANT ALL PRIVILEGES ON DATABASE letta TO letta_user;
+    \q
+
+Step 3: Configure Letta with PostgreSQL
+----------------------------------------
+    letta configure
+
+When prompted:
+- Storage backend: Choose "postgres" or "postgresql"
+- Database connection string: 
+  postgresql://letta_user:your_password@localhost:5432/letta
+- Base URL: http://localhost:8283
+
+Step 4: Start PostgreSQL (if not running)
+------------------------------------------
+Ubuntu/Debian:
+    sudo systemctl start postgresql
+    sudo systemctl enable postgresql  # Start on boot
+
+macOS:
+    brew services start postgresql
+
+Windows:
+    # PostgreSQL should auto-start as a service
+    # Or use: net start postgresql-x64-14  # Adjust version number
+
+Step 5: Start Letta Server
+---------------------------
+    letta server
+
+Step 6: Configure and Run LettaXRAG
+------------------------------------
+Same as Option 1, Step 3-4 above.
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Error: "ConnectionRefusedError: [WinError 1225]"
+------------------------------------------------
+CAUSE: Letta server is not running OR configured to use PostgreSQL but 
+       PostgreSQL is not running.
+
+SOLUTIONS:
+1. Make sure Letta server is running in a separate terminal:
+       letta server
+
+2. If using PostgreSQL, verify it's running:
+   Linux: sudo systemctl status postgresql
+   Mac: brew services list
+   Windows: services.msc -> look for "postgresql" service
+
+3. Check Letta configuration:
+       letta configure
+   Choose SQLite for simpler setup.
+
+Error: "HTTP/1.1 401 Unauthorized"
+-----------------------------------
+CAUSE: LettaXRAG is connecting to api.letta.com (cloud) instead of localhost.
+
+SOLUTION:
+1. Check your backend/.env file has:
+       LETTA_BASE_URL=http://localhost:8283
+
+2. Restart the backend:
+       cd backend
+       python main.py
+
+3. Verify in the logs you see:
+       "Connecting to local Letta server: http://localhost:8283"
+
+Error: "Letta library not installed"
+-------------------------------------
+CAUSE: Letta package is not installed in your virtual environment.
+
+SOLUTION:
+    cd backend
+    source venv/bin/activate  # Windows: venv\Scripts\activate
+    pip install letta>=0.16.0
+
+Error: "cannot access local variable 'session'"
+------------------------------------------------
+CAUSE: Database connection issue in Letta server.
+
+SOLUTION:
+1. Reconfigure Letta with SQLite:
+       letta configure
+   Choose "local" or "sqlite" storage backend.
+
+2. Delete old Letta data (WARNING: loses Letta history):
+   Linux/Mac: rm -rf ~/.letta
+   Windows: rmdir /s %USERPROFILE%\.letta
+
+3. Reconfigure and restart:
+       letta configure
+       letta server
+
+Error: Port 8283 already in use
+--------------------------------
+CAUSE: Another Letta server is running or port is occupied.
+
+SOLUTION:
+1. Kill existing Letta process:
+   Linux/Mac: lsof -ti:8283 | xargs kill -9
+   Windows: netstat -ano | findstr :8283
+            taskkill /PID [PID_NUMBER] /F
+
+2. Or change Letta server port:
+       letta server --port 8284
+   
+   Then update backend/.env:
+       LETTA_BASE_URL=http://localhost:8284
+
+================================================================================
+RUNNING WITHOUT LETTA (ALTERNATIVE)
+================================================================================
+
+If you can't get Letta working or don't need personality features:
+
+Option: Disable Letta
+---------------------
+1. Simply don't set LETTA_BASE_URL in your .env file:
+   
+   # backend/.env
+   MONGODB_URI=mongodb://localhost:27017/lettaXrag
+   LONGCAT_API_KEY=your_api_key_here
+   # LETTA_BASE_URL=  # Comment out or remove
+   # LETTA_API_KEY=   # Comment out or remove
+
+2. The system will automatically detect Letta is not available and continue
+   without it. Isabella will still work but without the Letta personality
+   processing layer.
+
+3. Personality will be handled by LLM system prompts in llm_service.py.
+
+================================================================================
+VERIFICATION CHECKLIST
+================================================================================
+
+✓ Letta Configuration Check
+----------------------------
+    letta configure --show
+    # Should display your current configuration
+
+✓ Test Letta Server
+--------------------
+In a separate terminal:
+    letta server
+    
+Expected output:
+    Server running at: http://localhost:8283
+
+✓ Test Letta Connection
+------------------------
+In Python:
+    from letta_client import Letta
+    client = Letta(base_url="http://localhost:8283")
+    agents = client.agents.list()
+    print("Connected successfully!")
+
+✓ Check Backend Configuration
+------------------------------
+    cat backend/.env | grep LETTA
+    
+Should show:
+    LETTA_BASE_URL=http://localhost:8283
+
+✓ Test Full System
+-------------------
+1. Terminal 1 - Start Letta Server:
+       letta server
+
+2. Terminal 2 - Start Backend:
+       cd backend
+       python main.py
+       
+   Look for in logs:
+       "✅ Connecting to local Letta server: http://localhost:8283"
+       "✅ Letta personality engine ready!"
+
+3. Terminal 3 - Start Frontend:
+       npm run dev
+
+4. Open browser to http://localhost:5173 and test chat
+
+================================================================================
+RECOMMENDED SETUP FOR DEVELOPMENT
+================================================================================
+
+For the simplest and most reliable setup:
+
+1. Use SQLite for Letta storage (not PostgreSQL)
+2. Run Letta server locally on default port (8283)
+3. Configure LettaXRAG to connect to localhost
+4. Keep Letta server running in a dedicated terminal
+
+Terminal Window Layout:
+┌─────────────────┬─────────────────┬─────────────────┐
+│  Letta Server   │  Backend        │  Frontend       │
+│  letta server   │  python main.py │  npm run dev    │
+│  :8283          │  :8000          │  :5173          │
+└─────────────────┴─────────────────┴─────────────────┘
+
+================================================================================
+ENVIRONMENT VARIABLES REFERENCE
+================================================================================
+
+backend/.env file should contain:
+
+# Required
+MONGODB_URI=mongodb://localhost:27017/lettaXrag
+LONGCAT_API_KEY=your_actual_longcat_api_key_here
+
+# Letta - Local Server (Recommended)
+LETTA_BASE_URL=http://localhost:8283
+# No LETTA_API_KEY needed for local server
+
+# Letta - Cloud Server (Alternative)
+# LETTA_BASE_URL=https://api.letta.com
+# LETTA_API_KEY=your_letta_cloud_api_key_here
+
+# Optional
+DATA_FOLDER=./data
+FAISS_INDEX_PATH=./storage/faiss_index.bin
+LOG_LEVEL=DEBUG
+
+================================================================================
+COMMON COMMANDS REFERENCE
+================================================================================
+
+Letta Server Management:
+    letta configure           # Configure Letta settings
+    letta configure --show    # Show current configuration
+    letta server              # Start server (default port 8283)
+    letta server --port 8284  # Start on custom port
+
+PostgreSQL Management (if using):
+    # Linux
+    sudo systemctl start postgresql
+    sudo systemctl stop postgresql
+    sudo systemctl status postgresql
+    
+    # macOS
+    brew services start postgresql
+    brew services stop postgresql
+    brew services list
+    
+    # Windows
+    net start postgresql-x64-14
+    net stop postgresql-x64-14
+
+Backend Management:
+    cd backend
+    source venv/bin/activate       # Activate virtual environment
+    pip install -r requirements.txt  # Install dependencies
+    python main.py                  # Start backend server
+
+================================================================================
+SUPPORT AND RESOURCES
+================================================================================
+
+Letta Documentation: https://docs.letta.com
+Letta GitHub: https://github.com/letta-ai/letta
+LettaXRAG Docs: See LETTA_INFO.md for detailed Letta integration info
+
+For more help, open an issue on GitHub.
+
+================================================================================
+LAST UPDATED: January 2026
+================================================================================
