@@ -48,10 +48,10 @@ When you don't know something, you own it with style."""
             client_kwargs = {}
             if settings.letta_base_url:
                 client_kwargs['base_url'] = settings.letta_base_url
-                log_info(f"Connecting to Letta server: {settings.letta_base_url}")
+                log_info(f"✅ Connecting to Letta server: {settings.letta_base_url}")
             if settings.letta_api_key:
                 client_kwargs['token'] = settings.letta_api_key
-                log_info("Using Letta API key for authentication")
+                log_info("✅ Using Letta API key for authentication")
             
             self.client = Letta(**client_kwargs)
             
