@@ -21,43 +21,30 @@ router = APIRouter()
 async def chat(request: ChatRequest):
     """Main chat endpoint"""
     try:
-        # Generate session ID if not provided
         session_id = request.session_id or str(uuid.uuid4())
         
         # Log incoming user prompt
         log_user_prompt(request.message)
         
-        # Process message through Letta personality engine
-        letta_processed = await letta_service.process_message(
-            request.message,
-            session_id
-        )
-        
         # Retrieve relevant context from RAG
         rag_context = rag_service.retrieve_context(request.message, k=3)
         log_rag_results(rag_context)
         
-        # Construct final prompt
-        final_prompt = letta_processed
-        log_final_prompt(final_prompt)
-        
-        # Generate response from LLM
+        # Generate response from LLM (Letta handles memory inside this)
         llm_response = await llm_service.generate_response(
-            prompt=final_prompt,
+            prompt=request.message,  # Send original message, not Letta-processed
             rag_context=rag_context
         )
         
-        # Prepare response
-        response_text = llm_response
-        log_outgoing_response(response_text)
+        log_outgoing_response(llm_response)
         
         # Save to database
         message_data = {
             "timestamp": datetime.utcnow(),
             "user_prompt": request.message,
-            "letta_processed_prompt": letta_processed,
-            "rag_context": rag_context,
-            "final_prompt": final_prompt,
+            "letta_processed_prompt": request.message,  # Same as user prompt now
+            "rag_context":  rag_context,
+            "final_prompt": request.message,
             "llm_response": llm_response,
             "session_id": session_id
         }
@@ -66,23 +53,21 @@ async def chat(request: ChatRequest):
         # Get source filenames
         rag_sources = []
         if rag_context:
-            # Extract unique source filenames from metadata
-            for ctx in rag_context[:3]:  # Limit to top 3
-                # Find matching metadata
-                for meta in rag_service.metadata:
+            for ctx in rag_context[: 3]: 
+                for meta in rag_service.metadata: 
                     if rag_service.documents[rag_service.metadata.index(meta)] == ctx:
                         source = meta.get('source', 'Unknown')
-                        if source not in rag_sources:
-                            rag_sources.append(source)
+                        if source not in rag_sources: 
+                            rag_sources. append(source)
                         break
         
         return ChatResponse(
-            response=response_text,
+            response=llm_response,
             rag_sources=rag_sources,
             timestamp=datetime.utcnow().isoformat()
         )
         
-    except Exception as e:
+    except Exception as e: 
         log_error(f"Error in chat endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 

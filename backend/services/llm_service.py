@@ -1,11 +1,10 @@
 from openai import OpenAI
 from config import settings
 from utils.logger import log_info, log_error, log_llm_response
+from services.letta_service import letta_service
 
 
 class LLMService:
-    """LongCat LLM integration using OpenAI client"""
-    
     def __init__(self):
         self.client = OpenAI(
             api_key=settings.longcat_api_key,
@@ -16,50 +15,47 @@ class LLMService:
             "Your name is Isabella. You are a sassy, confident AI assistant who helps users "
             "with their questions using retrieved knowledge."
         )
-    
-    async def generate_response(
-        self,
-        prompt: str,
-        rag_context: list = None,
-        temperature: float = 0.7,
-        max_tokens: int = 1000
-    ) -> str:
-        """Generate response from LLM"""
+
+    async def generate_response(self, prompt, rag_context=None, temperature=0.7, max_tokens=1000, use_memory=True):
+        """Generate response from LLM with optional Letta memory."""
         try:
-            # Construct messages
-            messages = [
-                {"role": "system", "content": self.system_instruction}
-            ]
-            
-            # Add RAG context if available
+            if use_memory and letta_service.client and letta_service.agent_id:
+                log_info("Using Letta with memory for response")
+                letta_response = await letta_service.process_with_memory(
+                    user_message=prompt,
+                    rag_context=rag_context
+                )
+                if letta_response and letta_response != prompt:
+                    log_llm_response(letta_response)
+                    return letta_response
+                log_info("Letta response empty, falling back to direct LLM")
+
+            messages = [{"role": "system", "content":  self.system_instruction}]
+
             if rag_context and len(rag_context) > 0:
                 context_text = "Here is some relevant information to help answer the question:\n\n"
                 for i, ctx in enumerate(rag_context, 1):
                     context_text += f"[Source {i}]\n{ctx}\n\n"
                 messages.append({"role": "system", "content": context_text})
-            
-            # Add user prompt
+
             messages.append({"role": "user", "content": prompt})
-            
+
             log_info(f"Sending request to LongCat LLM (model: {self.model})")
-            
-            # Call LLM
-            response = self.client.chat.completions.create(
+
+            response = self.client. chat.completions.create(
                 model=self.model,
                 messages=messages,
                 temperature=temperature,
                 max_tokens=max_tokens
             )
-            
+
             llm_response = response.choices[0].message.content
             log_llm_response(llm_response)
-            
             return llm_response
-            
+
         except Exception as e:
             log_error(f"Error calling LLM: {str(e)}")
-            return "I apologize, but I'm having trouble processing your request right now. Please try again later."
+            return "I apologize, but I'm having trouble processing your request right now.  Please try again later."
 
 
-# Global LLM service instance
 llm_service = LLMService()
