@@ -51082,7 +51082,7 @@
         "properties": {
           "agents": {
             "items": {
-              "$ref": "#/components/schemas/AgentSchema"
+              "$ref": "#/components/schemas/letta__schemas__agent_file__AgentSchema"
             },
             "type": "array",
             "title": "Agents",
@@ -51173,235 +51173,20 @@
       },
       "AgentSchema": {
         "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name",
-            "description": "The name of the agent."
-          },
-          "memory_blocks": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/CreateBlock"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Memory Blocks",
-            "description": "The blocks to create in the agent's in-context memory."
-          },
-          "tools": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tools",
-            "description": "The tools used by the agent."
-          },
-          "tool_ids": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Ids",
-            "description": "The ids of the tools used by the agent."
-          },
-          "source_ids": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Source Ids",
-            "description": "Deprecated: Use `folder_ids` field instead. The ids of the sources used by the agent.",
-            "deprecated": true
-          },
-          "folder_ids": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Folder Ids",
-            "description": "The ids of the folders used by the agent."
-          },
-          "block_ids": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Block Ids",
-            "description": "The ids of the blocks used by the agent."
-          },
-          "tool_rules": {
-            "anyOf": [
-              {
-                "items": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ChildToolRule"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InitToolRule"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TerminalToolRule"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ConditionalToolRule"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ContinueToolRule"
-                    },
-                    {
-                      "$ref": "#/components/schemas/RequiredBeforeExitToolRule"
-                    },
-                    {
-                      "$ref": "#/components/schemas/MaxCountPerStepToolRule"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ParentToolRule"
-                    },
-                    {
-                      "$ref": "#/components/schemas/RequiresApprovalToolRule"
-                    }
-                  ],
-                  "discriminator": {
-                    "propertyName": "type",
-                    "mapping": {
-                      "conditional": "#/components/schemas/ConditionalToolRule",
-                      "constrain_child_tools": "#/components/schemas/ChildToolRule",
-                      "continue_loop": "#/components/schemas/ContinueToolRule",
-                      "exit_loop": "#/components/schemas/TerminalToolRule",
-                      "max_count_per_step": "#/components/schemas/MaxCountPerStepToolRule",
-                      "parent_last_tool": "#/components/schemas/ParentToolRule",
-                      "required_before_exit": "#/components/schemas/RequiredBeforeExitToolRule",
-                      "requires_approval": "#/components/schemas/RequiresApprovalToolRule",
-                      "run_first": "#/components/schemas/InitToolRule"
-                    }
-                  }
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Rules",
-            "description": "The tool rules governing the agent."
-          },
-          "tags": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tags",
-            "description": "The tags associated with the agent."
-          },
-          "system": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "System",
-            "description": "The system prompt used by the agent."
-          },
           "agent_type": {
-            "$ref": "#/components/schemas/AgentType",
-            "description": "The type of agent."
+            "type": "string",
+            "title": "Agent Type"
           },
-          "initial_message_sequence": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/MessageCreate"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Initial Message Sequence",
-            "description": "The initial set of messages to put in the agent's in-context memory."
+          "core_memory": {
+            "items": {
+              "$ref": "#/components/schemas/CoreMemoryBlockSchema"
+            },
+            "type": "array",
+            "title": "Core Memory"
           },
-          "include_base_tools": {
-            "type": "boolean",
-            "title": "Include Base Tools",
-            "description": "If true, attaches the Letta core tools (e.g. core_memory related functions).",
-            "default": true
-          },
-          "include_multi_agent_tools": {
-            "type": "boolean",
-            "title": "Include Multi Agent Tools",
-            "description": "If true, attaches the Letta multi-agent tools (e.g. sending a message to another agent).",
-            "default": false
-          },
-          "include_base_tool_rules": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Include Base Tool Rules",
-            "description": "If true, attaches the Letta base tool rules (e.g. deny all tools not explicitly allowed)."
-          },
-          "include_default_source": {
-            "type": "boolean",
-            "title": "Include Default Source",
-            "description": "If true, automatically creates and attaches a default data source for this agent.",
-            "default": false,
-            "deprecated": true
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
           },
           "description": {
             "anyOf": [
@@ -51412,10 +51197,33 @@
                 "type": "null"
               }
             ],
-            "title": "Description",
-            "description": "The description of the agent."
+            "title": "Description"
           },
-          "metadata": {
+          "embedding_config": {
+            "$ref": "#/components/schemas/EmbeddingConfig"
+          },
+          "llm_config": {
+            "$ref": "#/components/schemas/LLMConfig"
+          },
+          "message_buffer_autoclear": {
+            "type": "boolean",
+            "title": "Message Buffer Autoclear"
+          },
+          "in_context_message_indices": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "In Context Message Indices"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/MessageSchema"
+            },
+            "type": "array",
+            "title": "Messages"
+          },
+          "metadata_": {
             "anyOf": [
               {
                 "additionalProperties": true,
@@ -51425,498 +51233,97 @@
                 "type": "null"
               }
             ],
-            "title": "Metadata",
-            "description": "The metadata of the agent."
+            "title": "Metadata"
           },
-          "llm_config": {
+          "multi_agent_group": {
             "anyOf": [
-              {
-                "$ref": "#/components/schemas/LLMConfig"
-              },
+              {},
               {
                 "type": "null"
               }
             ],
-            "description": "Deprecated: Use `model` field instead. The LLM configuration used by the agent.",
-            "deprecated": true
+            "title": "Multi Agent Group"
           },
-          "embedding_config": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EmbeddingConfig"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Deprecated: Use `embedding` field instead. The embedding configuration used by the agent.",
-            "deprecated": true
+          "name": {
+            "type": "string",
+            "title": "Name"
           },
-          "model": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Model",
-            "description": "The model handle for the agent to use (format: provider/model-name)."
+          "system": {
+            "type": "string",
+            "title": "System"
           },
-          "embedding": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Embedding",
-            "description": "The embedding model handle used by the agent (format: provider/model-name)."
-          },
-          "model_settings": {
-            "anyOf": [
-              {
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/OpenAIModelSettings"
-                  },
-                  {
-                    "$ref": "#/components/schemas/AnthropicModelSettings"
-                  },
-                  {
-                    "$ref": "#/components/schemas/GoogleAIModelSettings"
-                  },
-                  {
-                    "$ref": "#/components/schemas/GoogleVertexModelSettings"
-                  },
-                  {
-                    "$ref": "#/components/schemas/AzureModelSettings"
-                  },
-                  {
-                    "$ref": "#/components/schemas/XAIModelSettings"
-                  },
-                  {
-                    "$ref": "#/components/schemas/ZAIModelSettings"
-                  },
-                  {
-                    "$ref": "#/components/schemas/GroqModelSettings"
-                  },
-                  {
-                    "$ref": "#/components/schemas/DeepseekModelSettings"
-                  },
-                  {
-                    "$ref": "#/components/schemas/TogetherModelSettings"
-                  },
-                  {
-                    "$ref": "#/components/schemas/BedrockModelSettings"
-                  }
-                ],
-                "discriminator": {
-                  "propertyName": "provider_type",
-                  "mapping": {
-                    "anthropic": "#/components/schemas/AnthropicModelSettings",
-                    "azure": "#/components/schemas/AzureModelSettings",
-                    "bedrock": "#/components/schemas/BedrockModelSettings",
-                    "deepseek": "#/components/schemas/DeepseekModelSettings",
-                    "google_ai": "#/components/schemas/GoogleAIModelSettings",
-                    "google_vertex": "#/components/schemas/GoogleVertexModelSettings",
-                    "groq": "#/components/schemas/GroqModelSettings",
-                    "openai": "#/components/schemas/OpenAIModelSettings",
-                    "together": "#/components/schemas/TogetherModelSettings",
-                    "xai": "#/components/schemas/XAIModelSettings",
-                    "zai": "#/components/schemas/ZAIModelSettings"
-                  }
-                }
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Model Settings",
-            "description": "The model settings for the agent."
-          },
-          "compaction_settings": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/CompactionSettings-Input"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The compaction settings configuration used for compaction."
-          },
-          "context_window_limit": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Context Window Limit",
-            "description": "The context window limit used by the agent."
-          },
-          "embedding_chunk_size": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Embedding Chunk Size",
-            "description": "Deprecated: No longer used. The embedding chunk size used by the agent.",
-            "default": 300,
-            "deprecated": true
-          },
-          "max_tokens": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Tokens",
-            "description": "Deprecated: Use `model` field to configure max output tokens instead. The maximum number of tokens to generate, including reasoning step.",
-            "deprecated": true
-          },
-          "max_reasoning_tokens": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Reasoning Tokens",
-            "description": "Deprecated: Use `model` field to configure reasoning tokens instead. The maximum number of tokens to generate for reasoning step.",
-            "deprecated": true
-          },
-          "enable_reasoner": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Enable Reasoner",
-            "description": "Deprecated: Use `model` field to configure reasoning instead. Whether to enable internal extended thinking step for a reasoner model.",
-            "default": true,
-            "deprecated": true
-          },
-          "reasoning": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Reasoning",
-            "description": "Deprecated: Use `model` field to configure reasoning instead. Whether to enable reasoning for this agent.",
-            "deprecated": true
-          },
-          "from_template": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "From Template",
-            "description": "Deprecated: please use the 'create agents from a template' endpoint instead.",
-            "deprecated": true
-          },
-          "template": {
-            "type": "boolean",
-            "title": "Template",
-            "description": "Deprecated: No longer used.",
-            "default": false,
-            "deprecated": true
-          },
-          "project": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Project",
-            "description": "Deprecated: Project should now be passed via the X-Project header instead of in the request body. If using the SDK, this can be done via the x_project parameter.",
-            "deprecated": true
+          "tags": {
+            "items": {
+              "$ref": "#/components/schemas/TagSchema"
+            },
+            "type": "array",
+            "title": "Tags"
           },
           "tool_exec_environment_variables": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "type": "string"
+            "items": {
+              "$ref": "#/components/schemas/ToolEnvVarSchema"
+            },
+            "type": "array",
+            "title": "Tool Exec Environment Variables"
+          },
+          "tool_rules": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/BaseToolRuleSchema"
                 },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Exec Environment Variables",
-            "description": "Deprecated: Use `secrets` field instead. Environment variables for tool execution.",
-            "deprecated": true
-          },
-          "secrets": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "type": "string"
+                {
+                  "$ref": "#/components/schemas/ChildToolRuleSchema"
                 },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Secrets",
-            "description": "The environment variables for tool execution specific to this agent."
-          },
-          "memory_variables": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "type": "string"
+                {
+                  "$ref": "#/components/schemas/MaxCountPerStepToolRuleSchema"
                 },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Memory Variables",
-            "description": "Deprecated: Only relevant for creating agents from a template. Use the 'create agents from a template' endpoint instead.",
-            "deprecated": true
-          },
-          "project_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Project Id",
-            "description": "Deprecated: No longer used. The id of the project the agent belongs to.",
-            "deprecated": true
-          },
-          "template_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Template Id",
-            "description": "Deprecated: No longer used. The id of the template the agent belongs to.",
-            "deprecated": true
-          },
-          "base_template_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Base Template Id",
-            "description": "Deprecated: No longer used. The base template id of the agent.",
-            "deprecated": true
-          },
-          "identity_ids": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Identity Ids",
-            "description": "The ids of the identities associated with this agent."
-          },
-          "message_buffer_autoclear": {
-            "type": "boolean",
-            "title": "Message Buffer Autoclear",
-            "description": "If set to True, the agent will not remember previous messages (though the agent will still retain state via core memory blocks and archival/recall memory). Not recommended unless you have an advanced use case.",
-            "default": false
-          },
-          "enable_sleeptime": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Enable Sleeptime",
-            "description": "If set to True, memory management will move to a background agent thread."
-          },
-          "response_format": {
-            "anyOf": [
-              {
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/TextResponseFormat"
-                  },
-                  {
-                    "$ref": "#/components/schemas/JsonSchemaResponseFormat"
-                  },
-                  {
-                    "$ref": "#/components/schemas/JsonObjectResponseFormat"
-                  }
-                ],
-                "discriminator": {
-                  "propertyName": "type",
-                  "mapping": {
-                    "json_object": "#/components/schemas/JsonObjectResponseFormat",
-                    "json_schema": "#/components/schemas/JsonSchemaResponseFormat",
-                    "text": "#/components/schemas/TextResponseFormat"
-                  }
+                {
+                  "$ref": "#/components/schemas/ConditionalToolRuleSchema"
                 }
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Response Format",
-            "description": "Deprecated: Use `model_settings` field to configure response format instead. The response format for the agent.",
-            "deprecated": true
+              ]
+            },
+            "type": "array",
+            "title": "Tool Rules"
           },
-          "timezone": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Timezone",
-            "description": "The timezone of the agent (IANA format)."
+          "tools": {
+            "items": {
+              "$ref": "#/components/schemas/ToolSchema"
+            },
+            "type": "array",
+            "title": "Tools"
           },
-          "max_files_open": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Files Open",
-            "description": "Maximum number of files that can be open at once for this agent. Setting this too high may exceed the context window, which will break the agent."
-          },
-          "per_file_view_window_char_limit": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Per File View Window Char Limit",
-            "description": "The per-file view window character limit for this agent. Setting this too high may exceed the context window, which will break the agent."
-          },
-          "hidden": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Hidden",
-            "description": "Deprecated: No longer used. If set to True, the agent will be hidden.",
-            "deprecated": true
-          },
-          "parallel_tool_calls": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Parallel Tool Calls",
-            "description": "Deprecated: Use `model_settings` to configure parallel tool calls instead. If set to True, enables parallel tool calling.",
-            "deprecated": true
-          },
-          "id": {
+          "updated_at": {
             "type": "string",
-            "title": "Id",
-            "description": "Human-readable identifier for this agent in the file"
+            "title": "Updated At"
           },
-          "in_context_message_ids": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "In Context Message Ids",
-            "description": "List of message IDs that are currently in the agent's context"
-          },
-          "messages": {
-            "items": {
-              "$ref": "#/components/schemas/MessageSchema"
-            },
-            "type": "array",
-            "title": "Messages",
-            "description": "List of messages in the agent's conversation history"
-          },
-          "files_agents": {
-            "items": {
-              "$ref": "#/components/schemas/FileAgentSchema"
-            },
-            "type": "array",
-            "title": "Files Agents",
-            "description": "List of file-agent relationships for this agent"
-          },
-          "group_ids": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Group Ids",
-            "description": "List of groups that the agent manages"
+          "version": {
+            "type": "string",
+            "title": "Version"
           }
         },
         "type": "object",
         "required": [
-          "id"
+          "agent_type",
+          "core_memory",
+          "created_at",
+          "description",
+          "embedding_config",
+          "llm_config",
+          "message_buffer_autoclear",
+          "in_context_message_indices",
+          "messages",
+          "multi_agent_group",
+          "name",
+          "system",
+          "tags",
+          "tool_exec_environment_variables",
+          "tool_rules",
+          "tools",
+          "updated_at",
+          "version"
         ],
-        "title": "AgentSchema",
-        "description": "Agent with human-readable ID for agent file"
+        "title": "AgentSchema"
       },
       "AgentState": {
         "properties": {
@@ -52727,7 +52134,7 @@
                       "$ref": "#/components/schemas/ApprovalReturn"
                     },
                     {
-                      "$ref": "#/components/schemas/ToolReturn"
+                      "$ref": "#/components/schemas/letta__schemas__letta_message__ToolReturn"
                     }
                   ],
                   "discriminator": {
@@ -53043,7 +52450,7 @@
                       "$ref": "#/components/schemas/ApprovalReturn"
                     },
                     {
-                      "$ref": "#/components/schemas/ToolReturn"
+                      "$ref": "#/components/schemas/letta__schemas__letta_message__ToolReturn"
                     }
                   ],
                   "discriminator": {
@@ -54784,7 +54191,7 @@
           "legacy_spec": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/letta__serialize_schemas__pydantic_agent_schema__AgentSchema"
+                "$ref": "#/components/schemas/AgentSchema"
               },
               {
                 "type": "null"
@@ -64560,7 +63967,7 @@
             "anyOf": [
               {
                 "items": {
-                  "$ref": "#/components/schemas/letta__schemas__message__ToolReturn"
+                  "$ref": "#/components/schemas/ToolReturn"
                 },
                 "type": "array"
               },
@@ -64676,7 +64083,7 @@
                       "$ref": "#/components/schemas/ApprovalReturn"
                     },
                     {
-                      "$ref": "#/components/schemas/letta__schemas__message__ToolReturn"
+                      "$ref": "#/components/schemas/ToolReturn"
                     }
                   ]
                 },
@@ -64822,86 +64229,9 @@
       },
       "MessageSchema": {
         "properties": {
-          "type": {
-            "anyOf": [
-              {
-                "type": "string",
-                "const": "message"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Type",
-            "description": "The message type to be created.",
-            "default": "message"
-          },
-          "role": {
-            "$ref": "#/components/schemas/MessageRole",
-            "description": "The role of the participant."
-          },
-          "content": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/LettaMessageContentUnion"
-                },
-                "type": "array"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Content",
-            "description": "The content of the message."
-          },
-          "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Name",
-            "description": "The name of the participant."
-          },
-          "otid": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Otid",
-            "description": "The offline threading id associated with this message"
-          },
-          "sender_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sender Id",
-            "description": "The id of the sender of the message, can be an identity id or agent id"
-          },
-          "batch_item_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Batch Item Id",
-            "description": "The id of the LLMBatchItem that this message is associated with"
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
           },
           "group_id": {
             "anyOf": [
@@ -64912,13 +64242,7 @@
                 "type": "null"
               }
             ],
-            "title": "Group Id",
-            "description": "The multi-agent group that the message was sent in"
-          },
-          "id": {
-            "type": "string",
-            "title": "Id",
-            "description": "Human-readable identifier for this message in the file"
+            "title": "Group Id"
           },
           "model": {
             "anyOf": [
@@ -64929,10 +64253,9 @@
                 "type": "null"
               }
             ],
-            "title": "Model",
-            "description": "The model used to make the function call"
+            "title": "Model"
           },
-          "agent_id": {
+          "name": {
             "anyOf": [
               {
                 "type": "string"
@@ -64941,23 +64264,18 @@
                 "type": "null"
               }
             ],
-            "title": "Agent Id",
-            "description": "The unique identifier of the agent"
+            "title": "Name"
           },
-          "tool_calls": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/ChatCompletionMessageFunctionToolCall-Input"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Calls",
-            "description": "The list of tool calls requested. Only applicable for role assistant."
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/LettaMessageContentUnion"
+            },
+            "type": "array",
+            "title": "Content"
           },
           "tool_call_id": {
             "anyOf": [
@@ -64968,97 +64286,37 @@
                 "type": "null"
               }
             ],
-            "title": "Tool Call Id",
-            "description": "The ID of the tool call. Only applicable for role tool."
+            "title": "Tool Call Id"
+          },
+          "tool_calls": {
+            "items": {},
+            "type": "array",
+            "title": "Tool Calls"
           },
           "tool_returns": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/letta__schemas__message__ToolReturn"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Returns",
-            "description": "Tool execution return information for prior tool calls"
+            "items": {},
+            "type": "array",
+            "title": "Tool Returns"
           },
-          "created_at": {
+          "updated_at": {
             "type": "string",
-            "format": "date-time",
-            "title": "Created At",
-            "description": "The timestamp when the object was created."
-          },
-          "approve": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Approve",
-            "description": "Whether the tool has been approved"
-          },
-          "approval_request_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Approval Request Id",
-            "description": "The message ID of the approval request"
-          },
-          "denial_reason": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Denial Reason",
-            "description": "An optional explanation for the provided approval status"
-          },
-          "approvals": {
-            "anyOf": [
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/ApprovalReturn"
-                    },
-                    {
-                      "$ref": "#/components/schemas/letta__schemas__message__ToolReturn"
-                    }
-                  ]
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Approvals",
-            "description": "Approval returns for the message"
+            "title": "Updated At"
           }
         },
         "type": "object",
         "required": [
+          "created_at",
+          "group_id",
+          "model",
+          "name",
           "role",
           "content",
-          "id"
+          "tool_call_id",
+          "tool_calls",
+          "tool_returns",
+          "updated_at"
         ],
-        "title": "MessageSchema",
-        "description": "Message with human-readable ID for agent file"
+        "title": "MessageSchema"
       },
       "MessageSearchRequest": {
         "properties": {
@@ -71003,16 +70261,15 @@
       },
       "ToolReturn": {
         "properties": {
-          "type": {
-            "type": "string",
-            "const": "tool",
-            "title": "Type",
-            "description": "The message type to be created.",
-            "default": "tool"
-          },
-          "tool_return": {
-            "type": "string",
-            "title": "Tool Return"
+          "tool_call_id": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Call Id",
+            "description": "The ID for the tool call"
           },
           "status": {
             "type": "string",
@@ -71020,11 +70277,8 @@
               "success",
               "error"
             ],
-            "title": "Status"
-          },
-          "tool_call_id": {
-            "type": "string",
-            "title": "Tool Call Id"
+            "title": "Status",
+            "description": "The status of the tool call"
           },
           "stdout": {
             "anyOf": [
@@ -71038,7 +70292,8 @@
                 "type": "null"
               }
             ],
-            "title": "Stdout"
+            "title": "Stdout",
+            "description": "Captured stdout (e.g. prints, logs) from the tool invocation"
           },
           "stderr": {
             "anyOf": [
@@ -71052,14 +70307,25 @@
                 "type": "null"
               }
             ],
-            "title": "Stderr"
+            "title": "Stderr",
+            "description": "Captured stderr from the tool invocation"
+          },
+          "func_response": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Func Response",
+            "description": "The function response string"
           }
         },
         "type": "object",
         "required": [
-          "tool_return",
-          "status",
-          "tool_call_id"
+          "status"
         ],
         "title": "ToolReturn"
       },
@@ -71244,7 +70510,7 @@
             "anyOf": [
               {
                 "items": {
-                  "$ref": "#/components/schemas/ToolReturn"
+                  "$ref": "#/components/schemas/letta__schemas__letta_message__ToolReturn"
                 },
                 "type": "array"
               },
@@ -73417,6 +72683,993 @@
         "title": "ZAIModelSettings",
         "description": "Z.ai (ZhipuAI) model configuration (OpenAI-compatible)."
       },
+      "letta__schemas__agent_file__AgentSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "The name of the agent."
+          },
+          "memory_blocks": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/CreateBlock"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Blocks",
+            "description": "The blocks to create in the agent's in-context memory."
+          },
+          "tools": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tools",
+            "description": "The tools used by the agent."
+          },
+          "tool_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Ids",
+            "description": "The ids of the tools used by the agent."
+          },
+          "source_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Ids",
+            "description": "Deprecated: Use `folder_ids` field instead. The ids of the sources used by the agent.",
+            "deprecated": true
+          },
+          "folder_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Ids",
+            "description": "The ids of the folders used by the agent."
+          },
+          "block_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Block Ids",
+            "description": "The ids of the blocks used by the agent."
+          },
+          "tool_rules": {
+            "anyOf": [
+              {
+                "items": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ChildToolRule"
+                    },
+                    {
+                      "$ref": "#/components/schemas/InitToolRule"
+                    },
+                    {
+                      "$ref": "#/components/schemas/TerminalToolRule"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ConditionalToolRule"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ContinueToolRule"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RequiredBeforeExitToolRule"
+                    },
+                    {
+                      "$ref": "#/components/schemas/MaxCountPerStepToolRule"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ParentToolRule"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RequiresApprovalToolRule"
+                    }
+                  ],
+                  "discriminator": {
+                    "propertyName": "type",
+                    "mapping": {
+                      "conditional": "#/components/schemas/ConditionalToolRule",
+                      "constrain_child_tools": "#/components/schemas/ChildToolRule",
+                      "continue_loop": "#/components/schemas/ContinueToolRule",
+                      "exit_loop": "#/components/schemas/TerminalToolRule",
+                      "max_count_per_step": "#/components/schemas/MaxCountPerStepToolRule",
+                      "parent_last_tool": "#/components/schemas/ParentToolRule",
+                      "required_before_exit": "#/components/schemas/RequiredBeforeExitToolRule",
+                      "requires_approval": "#/components/schemas/RequiresApprovalToolRule",
+                      "run_first": "#/components/schemas/InitToolRule"
+                    }
+                  }
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Rules",
+            "description": "The tool rules governing the agent."
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags",
+            "description": "The tags associated with the agent."
+          },
+          "system": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System",
+            "description": "The system prompt used by the agent."
+          },
+          "agent_type": {
+            "$ref": "#/components/schemas/AgentType",
+            "description": "The type of agent."
+          },
+          "initial_message_sequence": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/MessageCreate"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Initial Message Sequence",
+            "description": "The initial set of messages to put in the agent's in-context memory."
+          },
+          "include_base_tools": {
+            "type": "boolean",
+            "title": "Include Base Tools",
+            "description": "If true, attaches the Letta core tools (e.g. core_memory related functions).",
+            "default": true
+          },
+          "include_multi_agent_tools": {
+            "type": "boolean",
+            "title": "Include Multi Agent Tools",
+            "description": "If true, attaches the Letta multi-agent tools (e.g. sending a message to another agent).",
+            "default": false
+          },
+          "include_base_tool_rules": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Include Base Tool Rules",
+            "description": "If true, attaches the Letta base tool rules (e.g. deny all tools not explicitly allowed)."
+          },
+          "include_default_source": {
+            "type": "boolean",
+            "title": "Include Default Source",
+            "description": "If true, automatically creates and attaches a default data source for this agent.",
+            "default": false,
+            "deprecated": true
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "The description of the agent."
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata",
+            "description": "The metadata of the agent."
+          },
+          "llm_config": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LLMConfig"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Deprecated: Use `model` field instead. The LLM configuration used by the agent.",
+            "deprecated": true
+          },
+          "embedding_config": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EmbeddingConfig"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Deprecated: Use `embedding` field instead. The embedding configuration used by the agent.",
+            "deprecated": true
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "The model handle for the agent to use (format: provider/model-name)."
+          },
+          "embedding": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embedding",
+            "description": "The embedding model handle used by the agent (format: provider/model-name)."
+          },
+          "model_settings": {
+            "anyOf": [
+              {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/OpenAIModelSettings"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AnthropicModelSettings"
+                  },
+                  {
+                    "$ref": "#/components/schemas/GoogleAIModelSettings"
+                  },
+                  {
+                    "$ref": "#/components/schemas/GoogleVertexModelSettings"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AzureModelSettings"
+                  },
+                  {
+                    "$ref": "#/components/schemas/XAIModelSettings"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ZAIModelSettings"
+                  },
+                  {
+                    "$ref": "#/components/schemas/GroqModelSettings"
+                  },
+                  {
+                    "$ref": "#/components/schemas/DeepseekModelSettings"
+                  },
+                  {
+                    "$ref": "#/components/schemas/TogetherModelSettings"
+                  },
+                  {
+                    "$ref": "#/components/schemas/BedrockModelSettings"
+                  }
+                ],
+                "discriminator": {
+                  "propertyName": "provider_type",
+                  "mapping": {
+                    "anthropic": "#/components/schemas/AnthropicModelSettings",
+                    "azure": "#/components/schemas/AzureModelSettings",
+                    "bedrock": "#/components/schemas/BedrockModelSettings",
+                    "deepseek": "#/components/schemas/DeepseekModelSettings",
+                    "google_ai": "#/components/schemas/GoogleAIModelSettings",
+                    "google_vertex": "#/components/schemas/GoogleVertexModelSettings",
+                    "groq": "#/components/schemas/GroqModelSettings",
+                    "openai": "#/components/schemas/OpenAIModelSettings",
+                    "together": "#/components/schemas/TogetherModelSettings",
+                    "xai": "#/components/schemas/XAIModelSettings",
+                    "zai": "#/components/schemas/ZAIModelSettings"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Settings",
+            "description": "The model settings for the agent."
+          },
+          "compaction_settings": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompactionSettings-Input"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The compaction settings configuration used for compaction."
+          },
+          "context_window_limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Window Limit",
+            "description": "The context window limit used by the agent."
+          },
+          "embedding_chunk_size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embedding Chunk Size",
+            "description": "Deprecated: No longer used. The embedding chunk size used by the agent.",
+            "default": 300,
+            "deprecated": true
+          },
+          "max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Tokens",
+            "description": "Deprecated: Use `model` field to configure max output tokens instead. The maximum number of tokens to generate, including reasoning step.",
+            "deprecated": true
+          },
+          "max_reasoning_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Reasoning Tokens",
+            "description": "Deprecated: Use `model` field to configure reasoning tokens instead. The maximum number of tokens to generate for reasoning step.",
+            "deprecated": true
+          },
+          "enable_reasoner": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enable Reasoner",
+            "description": "Deprecated: Use `model` field to configure reasoning instead. Whether to enable internal extended thinking step for a reasoner model.",
+            "default": true,
+            "deprecated": true
+          },
+          "reasoning": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasoning",
+            "description": "Deprecated: Use `model` field to configure reasoning instead. Whether to enable reasoning for this agent.",
+            "deprecated": true
+          },
+          "from_template": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Template",
+            "description": "Deprecated: please use the 'create agents from a template' endpoint instead.",
+            "deprecated": true
+          },
+          "template": {
+            "type": "boolean",
+            "title": "Template",
+            "description": "Deprecated: No longer used.",
+            "default": false,
+            "deprecated": true
+          },
+          "project": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project",
+            "description": "Deprecated: Project should now be passed via the X-Project header instead of in the request body. If using the SDK, this can be done via the x_project parameter.",
+            "deprecated": true
+          },
+          "tool_exec_environment_variables": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Exec Environment Variables",
+            "description": "Deprecated: Use `secrets` field instead. Environment variables for tool execution.",
+            "deprecated": true
+          },
+          "secrets": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secrets",
+            "description": "The environment variables for tool execution specific to this agent."
+          },
+          "memory_variables": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Variables",
+            "description": "Deprecated: Only relevant for creating agents from a template. Use the 'create agents from a template' endpoint instead.",
+            "deprecated": true
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id",
+            "description": "Deprecated: No longer used. The id of the project the agent belongs to.",
+            "deprecated": true
+          },
+          "template_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Template Id",
+            "description": "Deprecated: No longer used. The id of the template the agent belongs to.",
+            "deprecated": true
+          },
+          "base_template_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Template Id",
+            "description": "Deprecated: No longer used. The base template id of the agent.",
+            "deprecated": true
+          },
+          "identity_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identity Ids",
+            "description": "The ids of the identities associated with this agent."
+          },
+          "message_buffer_autoclear": {
+            "type": "boolean",
+            "title": "Message Buffer Autoclear",
+            "description": "If set to True, the agent will not remember previous messages (though the agent will still retain state via core memory blocks and archival/recall memory). Not recommended unless you have an advanced use case.",
+            "default": false
+          },
+          "enable_sleeptime": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enable Sleeptime",
+            "description": "If set to True, memory management will move to a background agent thread."
+          },
+          "response_format": {
+            "anyOf": [
+              {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/TextResponseFormat"
+                  },
+                  {
+                    "$ref": "#/components/schemas/JsonSchemaResponseFormat"
+                  },
+                  {
+                    "$ref": "#/components/schemas/JsonObjectResponseFormat"
+                  }
+                ],
+                "discriminator": {
+                  "propertyName": "type",
+                  "mapping": {
+                    "json_object": "#/components/schemas/JsonObjectResponseFormat",
+                    "json_schema": "#/components/schemas/JsonSchemaResponseFormat",
+                    "text": "#/components/schemas/TextResponseFormat"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Format",
+            "description": "Deprecated: Use `model_settings` field to configure response format instead. The response format for the agent.",
+            "deprecated": true
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone",
+            "description": "The timezone of the agent (IANA format)."
+          },
+          "max_files_open": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Files Open",
+            "description": "Maximum number of files that can be open at once for this agent. Setting this too high may exceed the context window, which will break the agent."
+          },
+          "per_file_view_window_char_limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per File View Window Char Limit",
+            "description": "The per-file view window character limit for this agent. Setting this too high may exceed the context window, which will break the agent."
+          },
+          "hidden": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hidden",
+            "description": "Deprecated: No longer used. If set to True, the agent will be hidden.",
+            "deprecated": true
+          },
+          "parallel_tool_calls": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parallel Tool Calls",
+            "description": "Deprecated: Use `model_settings` to configure parallel tool calls instead. If set to True, enables parallel tool calling.",
+            "deprecated": true
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Human-readable identifier for this agent in the file"
+          },
+          "in_context_message_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "In Context Message Ids",
+            "description": "List of message IDs that are currently in the agent's context"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/letta__schemas__agent_file__MessageSchema"
+            },
+            "type": "array",
+            "title": "Messages",
+            "description": "List of messages in the agent's conversation history"
+          },
+          "files_agents": {
+            "items": {
+              "$ref": "#/components/schemas/FileAgentSchema"
+            },
+            "type": "array",
+            "title": "Files Agents",
+            "description": "List of file-agent relationships for this agent"
+          },
+          "group_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Group Ids",
+            "description": "List of groups that the agent manages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "AgentSchema",
+        "description": "Agent with human-readable ID for agent file"
+      },
+      "letta__schemas__agent_file__MessageSchema": {
+        "properties": {
+          "type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "message"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type",
+            "description": "The message type to be created.",
+            "default": "message"
+          },
+          "role": {
+            "$ref": "#/components/schemas/MessageRole",
+            "description": "The role of the participant."
+          },
+          "content": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/LettaMessageContentUnion"
+                },
+                "type": "array"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Content",
+            "description": "The content of the message."
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "The name of the participant."
+          },
+          "otid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Otid",
+            "description": "The offline threading id associated with this message"
+          },
+          "sender_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sender Id",
+            "description": "The id of the sender of the message, can be an identity id or agent id"
+          },
+          "batch_item_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Item Id",
+            "description": "The id of the LLMBatchItem that this message is associated with"
+          },
+          "group_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Id",
+            "description": "The multi-agent group that the message was sent in"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Human-readable identifier for this message in the file"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "The model used to make the function call"
+          },
+          "agent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Id",
+            "description": "The unique identifier of the agent"
+          },
+          "tool_calls": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionMessageFunctionToolCall-Input"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Calls",
+            "description": "The list of tool calls requested. Only applicable for role assistant."
+          },
+          "tool_call_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Call Id",
+            "description": "The ID of the tool call. Only applicable for role tool."
+          },
+          "tool_returns": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ToolReturn"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Returns",
+            "description": "Tool execution return information for prior tool calls"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "The timestamp when the object was created."
+          },
+          "approve": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approve",
+            "description": "Whether the tool has been approved"
+          },
+          "approval_request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approval Request Id",
+            "description": "The message ID of the approval request"
+          },
+          "denial_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Denial Reason",
+            "description": "An optional explanation for the provided approval status"
+          },
+          "approvals": {
+            "anyOf": [
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ApprovalReturn"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ToolReturn"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approvals",
+            "description": "Approval returns for the message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "content",
+          "id"
+        ],
+        "title": "MessageSchema",
+        "description": "Message with human-readable ID for agent file"
+      },
       "letta__schemas__agent_file__ToolSchema": {
         "properties": {
           "id": {
@@ -73633,6 +73886,68 @@
         "title": "ToolSchema",
         "description": "Tool with human-readable ID for agent file"
       },
+      "letta__schemas__letta_message__ToolReturn": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "tool",
+            "title": "Type",
+            "description": "The message type to be created.",
+            "default": "tool"
+          },
+          "tool_return": {
+            "type": "string",
+            "title": "Tool Return"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "title": "Status"
+          },
+          "tool_call_id": {
+            "type": "string",
+            "title": "Tool Call Id"
+          },
+          "stdout": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stdout"
+          },
+          "stderr": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stderr"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tool_return",
+          "status",
+          "tool_call_id"
+        ],
+        "title": "ToolReturn"
+      },
       "letta__schemas__mcp__UpdateStdioMCPServer": {
         "properties": {
           "server_name": {
@@ -73816,321 +74131,6 @@
         ],
         "title": "UpdateSSEMCPServer",
         "description": "Update schema for SSE MCP server - all fields optional"
-      },
-      "letta__schemas__message__ToolReturn": {
-        "properties": {
-          "tool_call_id": {
-            "anyOf": [
-              {},
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Call Id",
-            "description": "The ID for the tool call"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ],
-            "title": "Status",
-            "description": "The status of the tool call"
-          },
-          "stdout": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Stdout",
-            "description": "Captured stdout (e.g. prints, logs) from the tool invocation"
-          },
-          "stderr": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Stderr",
-            "description": "Captured stderr from the tool invocation"
-          },
-          "func_response": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Func Response",
-            "description": "The function response string"
-          }
-        },
-        "type": "object",
-        "required": [
-          "status"
-        ],
-        "title": "ToolReturn"
-      },
-      "letta__serialize_schemas__pydantic_agent_schema__AgentSchema": {
-        "properties": {
-          "agent_type": {
-            "type": "string",
-            "title": "Agent Type"
-          },
-          "core_memory": {
-            "items": {
-              "$ref": "#/components/schemas/CoreMemoryBlockSchema"
-            },
-            "type": "array",
-            "title": "Core Memory"
-          },
-          "created_at": {
-            "type": "string",
-            "title": "Created At"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "embedding_config": {
-            "$ref": "#/components/schemas/EmbeddingConfig"
-          },
-          "llm_config": {
-            "$ref": "#/components/schemas/LLMConfig"
-          },
-          "message_buffer_autoclear": {
-            "type": "boolean",
-            "title": "Message Buffer Autoclear"
-          },
-          "in_context_message_indices": {
-            "items": {
-              "type": "integer"
-            },
-            "type": "array",
-            "title": "In Context Message Indices"
-          },
-          "messages": {
-            "items": {
-              "$ref": "#/components/schemas/letta__serialize_schemas__pydantic_agent_schema__MessageSchema"
-            },
-            "type": "array",
-            "title": "Messages"
-          },
-          "metadata_": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Metadata"
-          },
-          "multi_agent_group": {
-            "anyOf": [
-              {},
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Multi Agent Group"
-          },
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "system": {
-            "type": "string",
-            "title": "System"
-          },
-          "tags": {
-            "items": {
-              "$ref": "#/components/schemas/TagSchema"
-            },
-            "type": "array",
-            "title": "Tags"
-          },
-          "tool_exec_environment_variables": {
-            "items": {
-              "$ref": "#/components/schemas/ToolEnvVarSchema"
-            },
-            "type": "array",
-            "title": "Tool Exec Environment Variables"
-          },
-          "tool_rules": {
-            "items": {
-              "anyOf": [
-                {
-                  "$ref": "#/components/schemas/BaseToolRuleSchema"
-                },
-                {
-                  "$ref": "#/components/schemas/ChildToolRuleSchema"
-                },
-                {
-                  "$ref": "#/components/schemas/MaxCountPerStepToolRuleSchema"
-                },
-                {
-                  "$ref": "#/components/schemas/ConditionalToolRuleSchema"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Tool Rules"
-          },
-          "tools": {
-            "items": {
-              "$ref": "#/components/schemas/ToolSchema"
-            },
-            "type": "array",
-            "title": "Tools"
-          },
-          "updated_at": {
-            "type": "string",
-            "title": "Updated At"
-          },
-          "version": {
-            "type": "string",
-            "title": "Version"
-          }
-        },
-        "type": "object",
-        "required": [
-          "agent_type",
-          "core_memory",
-          "created_at",
-          "description",
-          "embedding_config",
-          "llm_config",
-          "message_buffer_autoclear",
-          "in_context_message_indices",
-          "messages",
-          "multi_agent_group",
-          "name",
-          "system",
-          "tags",
-          "tool_exec_environment_variables",
-          "tool_rules",
-          "tools",
-          "updated_at",
-          "version"
-        ],
-        "title": "AgentSchema"
-      },
-      "letta__serialize_schemas__pydantic_agent_schema__MessageSchema": {
-        "properties": {
-          "created_at": {
-            "type": "string",
-            "title": "Created At"
-          },
-          "group_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Group Id"
-          },
-          "model": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Model"
-          },
-          "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Name"
-          },
-          "role": {
-            "type": "string",
-            "title": "Role"
-          },
-          "content": {
-            "items": {
-              "$ref": "#/components/schemas/LettaMessageContentUnion"
-            },
-            "type": "array",
-            "title": "Content"
-          },
-          "tool_call_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Call Id"
-          },
-          "tool_calls": {
-            "items": {},
-            "type": "array",
-            "title": "Tool Calls"
-          },
-          "tool_returns": {
-            "items": {},
-            "type": "array",
-            "title": "Tool Returns"
-          },
-          "updated_at": {
-            "type": "string",
-            "title": "Updated At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "created_at",
-          "group_id",
-          "model",
-          "name",
-          "role",
-          "content",
-          "tool_call_id",
-          "tool_calls",
-          "tool_returns",
-          "updated_at"
-        ],
-        "title": "MessageSchema"
       },
       "openai__types__chat__chat_completion_message_function_tool_call_param__Function": {
         "properties": {

@@ -29,7 +29,7 @@ class LLMService:
             messages = [{"role": "system", "content":  self.system_instruction}]
 
             if rag_context and len(rag_context) > 0:
-                context_text = "Here is some relevant information to help answer the question:\n\n"
+                context_text = "You have rag system buildin and these are its retrevals:\n\n"
                 for i, ctx in enumerate(rag_context, 1):
                     context_text += f"[Source {i}]\n{ctx}\n\n"
                 messages.append({"role": "system", "content": context_text})
