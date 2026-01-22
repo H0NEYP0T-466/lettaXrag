@@ -1,3 +1,4 @@
+from datetime import datetime
 from openai import OpenAI
 from config import settings
 from utils.logger import log_info, log_error, log_llm_response
@@ -12,9 +13,11 @@ class LLMService:
         )
         self.model = "LongCat-Flash-Chat"
 
-    async def generate_response(self, prompt, rag_context=None, temperature=0.7, max_tokens=1000, use_memory=True):
+    async def generate_response(self, prompt, rag_context=None, temperature=0.7, max_tokens=8192, use_memory=True):
         """Generate response from LLM with optional Letta memory."""
         try:
+            current_timestamp = datetime.now().strftime("%A, %B %d, %Y - %H:%M")
+            prompt = f"[System Note: Current Time is {current_timestamp}] {prompt}"
             if use_memory and letta_service.client and letta_service.agent_id:
                 log_info("Using Letta with memory for response")
                 letta_response = await letta_service.process_with_memory(
