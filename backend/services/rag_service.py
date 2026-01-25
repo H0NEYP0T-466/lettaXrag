@@ -123,7 +123,7 @@ class RAGService:
         Check if history.txt has changed since last indexing
         Returns: True if history file is new or modified, False otherwise
         """
-        history_file = Path(settings.history_file_path)
+        history_file = Path(settings.history_file_path).resolve()
         
         # If history file doesn't exist, no change
         if not history_file.exists():
@@ -132,18 +132,26 @@ class RAGService:
         # Load saved file hashes
         saved_hashes = {}
         if os.path.exists(settings.file_hash_path):
-            with open(settings.file_hash_path, 'r') as f:
-                saved_hashes = json.load(f)
+            try:
+                with open(settings.file_hash_path, 'r') as f:
+                    saved_hashes = json.load(f)
+            except (json.JSONDecodeError, IOError) as e:
+                log_error(f"Error loading file hashes: {str(e)}")
+                return True  # Treat as changed to trigger re-indexing
         
         # Check if history file is in saved hashes and if hash changed
-        history_path_str = str(history_file.resolve())
+        history_path_str = str(history_file)
         if history_path_str not in saved_hashes:
             # History file is new
             return True
         
         # Check if hash changed
-        current_hash = self._get_file_hash(history_path_str)
-        return current_hash != saved_hashes.get(history_path_str)
+        try:
+            current_hash = self._get_file_hash(history_path_str)
+            return current_hash != saved_hashes.get(history_path_str)
+        except Exception as e:
+            log_error(f"Error getting history file hash: {str(e)}")
+            return True  # Treat as changed to trigger re-indexing
     
     def _get_changed_files(self) -> Tuple[List[str], List[str], List[str]]:
         """
@@ -192,7 +200,8 @@ class RAGService:
         
         # Also save history.txt hash if it exists
         if history_file.exists():
-            file_hashes[str(history_file.resolve())] = self._get_file_hash(str(history_file.resolve()))
+            history_resolved_path = str(history_file.resolve())
+            file_hashes[history_resolved_path] = self._get_file_hash(history_resolved_path)
         
         # Create storage directory if needed
         storage_path = Path(settings.file_hash_path).parent
@@ -273,9 +282,9 @@ class RAGService:
                 history_path_str = str(history_file)
                 
                 # Remove old history.txt chunks if they exist
-                old_history_chunks = [i for i, meta in enumerate(self.metadata) if meta.get('file_path') == history_path_str]
-                if old_history_chunks:
-                    log_info(f"Removing {len(old_history_chunks)} old history.txt chunks")
+                # Check if any chunks exist for this file path
+                if any(meta.get('file_path') == history_path_str for meta in self.metadata):
+                    log_info("Removing old history.txt chunks from index")
                     self._remove_files_from_index({history_path_str})
                 
                 # Add updated history.txt
