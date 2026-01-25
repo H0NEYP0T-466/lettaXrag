@@ -67,8 +67,12 @@ class RAGService:
                 chunks.append(chunk)
         return chunks
     
-    def _load_documents_from_folder(self) -> Tuple[List[str], List[dict]]:
-        """Load all supported documents from data folder"""
+    def _load_documents_from_folder(self, include_history: bool = False) -> Tuple[List[str], List[dict]]:
+        """Load all supported documents from data folder
+        
+        Args:
+            include_history: If True, include history.txt in loading. Default is False.
+        """
         documents = []
         metadata = []
         
@@ -82,10 +86,13 @@ class RAGService:
         history_file = Path(settings.history_file_path).resolve()
         
         for filepath in data_path.rglob('*'):
-            # Skip history.txt file
+            # Skip history.txt file unless include_history is True
             if filepath.resolve() == history_file:
-                log_info(f"Skipping history file: {filepath}")
-                continue
+                if not include_history:
+                    log_info(f"Skipping history file: {filepath}")
+                    continue
+                else:
+                    log_info(f"Including history file in initial load: {filepath}")
                 
             if filepath.is_file() and filepath.suffix in supported_extensions:
                 log_info(f"Loading file: {filepath}")
@@ -243,8 +250,8 @@ class RAGService:
     
     def _build_full_index(self):
         """Build complete index from all documents"""
-        # Load documents
-        self.documents, self.metadata = self._load_documents_from_folder()
+        # Load documents (including history.txt on initial startup)
+        self.documents, self.metadata = self._load_documents_from_folder(include_history=True)
         
         if not self.documents:
             log_info("No documents found. Creating empty index.")
