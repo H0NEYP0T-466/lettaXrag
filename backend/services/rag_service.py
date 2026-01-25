@@ -168,6 +168,7 @@ class RAGService:
         data_path = Path(settings.data_folder)
         supported_extensions = ['.txt', '.md', '.pdf', '.docx']
         history_file = Path(settings.history_file_path).resolve()
+        history_path_str = str(history_file)
         
         current_files = {}
         for filepath in data_path.rglob('*'):
@@ -177,10 +178,10 @@ class RAGService:
                 file_path = str(filepath)
                 current_files[file_path] = self._get_file_hash(file_path)
         
-        # Identify changes
+        # Identify changes (excluding history.txt from saved_hashes for deletion check)
         new_files = [f for f in current_files if f not in saved_hashes]
         modified_files = [f for f in current_files if f in saved_hashes and current_files[f] != saved_hashes[f]]
-        deleted_files = [f for f in saved_hashes if f not in current_files]
+        deleted_files = [f for f in saved_hashes if f not in current_files and f != history_path_str]
         
         return new_files, modified_files, deleted_files
     
@@ -189,6 +190,7 @@ class RAGService:
         data_path = Path(settings.data_folder)
         supported_extensions = ['.txt', '.md', '.pdf', '.docx']
         history_file = Path(settings.history_file_path).resolve()
+        history_path_str = str(history_file)
         
         file_hashes = {}
         for filepath in data_path.rglob('*'):
@@ -200,8 +202,7 @@ class RAGService:
         
         # Also save history.txt hash if it exists
         if history_file.exists():
-            history_resolved_path = str(history_file.resolve())
-            file_hashes[history_resolved_path] = self._get_file_hash(history_resolved_path)
+            file_hashes[history_path_str] = self._get_file_hash(history_path_str)
         
         # Create storage directory if needed
         storage_path = Path(settings.file_hash_path).parent
@@ -281,15 +282,12 @@ class RAGService:
                 history_file = Path(settings.history_file_path).resolve()
                 history_path_str = str(history_file)
                 
-                # Remove old history.txt chunks if they exist
-                # Check if any chunks exist for this file path
-                if any(meta.get('file_path') == history_path_str for meta in self.metadata):
-                    log_info("Removing old history.txt chunks from index")
-                    self._remove_files_from_index({history_path_str})
+                # Remove old history.txt chunks (if any exist, _remove_files_from_index handles it)
+                log_info("Updating history.txt in index")
+                self._remove_files_from_index({history_path_str})
                 
                 # Add updated history.txt
                 if history_file.exists():
-                    log_info("Adding updated history.txt to index")
                     self._add_files_to_index([history_path_str])
             
             # Add new/modified files
