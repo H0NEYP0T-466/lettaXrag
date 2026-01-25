@@ -272,13 +272,11 @@ class RAGService:
         # Find indices to keep
         new_documents = []
         new_metadata = []
-        new_embeddings = []
         
         for i, meta in enumerate(self.metadata):
-            if meta.get('file_path') not in file_paths:
+            if meta['file_path'] not in file_paths:
                 new_documents.append(self.documents[i])
                 new_metadata.append(meta)
-                # We'll need to re-encode kept documents
         
         if not new_documents:
             # All documents removed
@@ -289,6 +287,7 @@ class RAGService:
             return
         
         # Re-encode the kept documents
+        # Note: For large collections, consider storing embeddings separately
         log_info(f"Re-encoding {len(new_documents)} kept chunks after removing {len(self.documents) - len(new_documents)} chunks...")
         embeddings = self.model.encode(new_documents, show_progress_bar=False)
         embeddings = np.array(embeddings).astype('float32')

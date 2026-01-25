@@ -8,7 +8,7 @@ from utils.logger import (
     log_user_prompt, log_rag_results, log_final_prompt,
     log_outgoing_response, log_info, log_error
 )
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 import os
 from config import settings
@@ -30,7 +30,7 @@ def append_to_history(user_message: str, model_response: str):
             log_info(f"Created history file: {history_path}")
         
         # Append message and response with timestamp
-        timestamp = datetime.utcnow().isoformat()
+        timestamp = datetime.now(timezone.utc).isoformat()
         with open(history_path, 'a', encoding='utf-8') as f:
             f.write(f"\n{'='*80}\n")
             f.write(f"[{timestamp}] USER:\n{user_message}\n\n")
