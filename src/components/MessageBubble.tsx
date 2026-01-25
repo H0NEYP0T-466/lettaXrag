@@ -21,7 +21,7 @@ const MessageBubble = ({ message }: MessageBubbleProps) => {
     <div className={`message-bubble ${isUser ? 'user' : 'isabella'}`}>
       <div className="message-header">
         <span className="message-sender">
-          {isUser ? '$ user' : '> isabella'}
+          {isUser ? '~honeypot' : '~isabella'}
         </span>
         <span className="message-time">
           {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
