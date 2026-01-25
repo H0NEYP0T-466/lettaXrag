@@ -148,7 +148,7 @@ class RAGService:
         # Check if hash changed
         try:
             current_hash = self._get_file_hash(history_path_str)
-            return current_hash != saved_hashes.get(history_path_str)
+            return current_hash != saved_hashes[history_path_str]
         except Exception as e:
             log_error(f"Error getting history file hash: {str(e)}")
             return True  # Treat as changed to trigger re-indexing
