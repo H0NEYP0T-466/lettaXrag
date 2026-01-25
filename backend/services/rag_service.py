@@ -266,8 +266,6 @@ class RAGService:
             
             # Incremental update
             log_info(f"🔄 Incremental update: {len(new_files)} new, {len(modified_files)} modified, {len(deleted_files)} deleted files")
-            if history_changed:
-                log_info("🔄 history.txt has changed and will be updated")
             
             # Load existing index
             self._load_index()
@@ -282,9 +280,14 @@ class RAGService:
                 history_file = Path(settings.history_file_path).resolve()
                 history_path_str = str(history_file)
                 
-                # Remove old history.txt chunks (if any exist, _remove_files_from_index handles it)
-                log_info("Updating history.txt in index")
-                self._remove_files_from_index({history_path_str})
+                # Check if history.txt chunks exist in the index
+                has_history_chunks = any(meta.get('file_path') == history_path_str for meta in self.metadata)
+                
+                if has_history_chunks:
+                    log_info("Updating history.txt in index (removing old chunks)")
+                    self._remove_files_from_index({history_path_str})
+                else:
+                    log_info("Adding history.txt to index (no previous chunks found)")
                 
                 # Add updated history.txt
                 if history_file.exists():
