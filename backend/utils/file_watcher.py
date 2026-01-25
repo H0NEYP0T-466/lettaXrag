@@ -3,32 +3,40 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from utils.logger import log_info
+from pathlib import Path
 
 
 class DataFolderHandler(FileSystemEventHandler):
     """Monitor /data folder for changes"""
     
-    def __init__(self, callback):
+    def __init__(self, callback, ignore_file=None):
         self.callback = callback
         self.last_modified = time.time()
         self.debounce_seconds = 2
+        self.ignore_file = Path(ignore_file).resolve() if ignore_file else None
+    
+    def _should_ignore(self, event_path):
+        """Check if file should be ignored"""
+        if self.ignore_file:
+            return Path(event_path).resolve() == self.ignore_file
+        return False
     
     def on_created(self, event):
-        if event.is_directory:
+        if event.is_directory or self._should_ignore(event.src_path):
             return
         if self._should_process():
             log_info(f"New file detected: {event.src_path}")
             self.callback()
     
     def on_modified(self, event):
-        if event.is_directory:
+        if event.is_directory or self._should_ignore(event.src_path):
             return
         if self._should_process():
             log_info(f"File modified: {event.src_path}")
             self.callback()
     
     def on_deleted(self, event):
-        if event.is_directory:
+        if event.is_directory or self._should_ignore(event.src_path):
             return
         if self._should_process():
             log_info(f"File deleted: {event.src_path}")
@@ -46,10 +54,11 @@ class DataFolderHandler(FileSystemEventHandler):
 class FileWatcher:
     """Watch data folder for changes and trigger re-indexing"""
     
-    def __init__(self, path: str, callback):
+    def __init__(self, path: str, callback, ignore_file=None):
         self.path = path
         self.callback = callback
         self.observer = None
+        self.ignore_file = ignore_file
     
     def start(self):
         """Start watching the folder"""
@@ -57,7 +66,7 @@ class FileWatcher:
             os.makedirs(self.path)
             log_info(f"Created data folder: {self.path}")
         
-        event_handler = DataFolderHandler(self.callback)
+        event_handler = DataFolderHandler(self.callback, self.ignore_file)
         self.observer = Observer()
         self.observer.schedule(event_handler, self.path, recursive=True)
         self.observer.start()
