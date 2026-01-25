@@ -17,6 +17,30 @@ from pathlib import Path
 router = APIRouter()
 
 
+def append_to_history(user_message: str, model_response: str):
+    """Append user message and model response to history.txt"""
+    try:
+        history_path = Path(settings.history_file_path)
+        # Create data directory if it doesn't exist
+        history_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Create history file if it doesn't exist
+        if not history_path.exists():
+            history_path.touch()
+            log_info(f"Created history file: {history_path}")
+        
+        # Append message and response with timestamp
+        timestamp = datetime.utcnow().isoformat()
+        with open(history_path, 'a', encoding='utf-8') as f:
+            f.write(f"\n{'='*80}\n")
+            f.write(f"[{timestamp}] USER:\n{user_message}\n\n")
+            f.write(f"[{timestamp}] MODEL:\n{model_response}\n")
+            f.write(f"{'='*80}\n")
+        
+    except Exception as e:
+        log_error(f"Error appending to history: {str(e)}")
+
+
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """Main chat endpoint"""
@@ -37,6 +61,9 @@ async def chat(request: ChatRequest):
         )
         
         log_outgoing_response(llm_response)
+        
+        # Append to history.txt (do NOT trigger re-embedding)
+        append_to_history(request.message, llm_response)
         
         # Save to database
         message_data = {

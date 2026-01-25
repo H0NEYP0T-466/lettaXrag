@@ -36,7 +36,8 @@ async def lifespan(app: FastAPI):
         global file_watcher
         file_watcher = FileWatcher(
             settings.data_folder,
-            lambda: rag_service.initialize_index(force_rebuild=True)
+            lambda: rag_service.initialize_index(force_rebuild=False),  # Use incremental update
+            ignore_file=settings.history_file_path  # Ignore history.txt changes
         )
         file_watcher.start()
         
