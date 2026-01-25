@@ -118,9 +118,44 @@ class RAGService:
         
         return documents, metadata
     
+    def _check_history_file_changed(self) -> bool:
+        """
+        Check if history.txt has changed since last indexing
+        Returns: True if history file is new or modified, False otherwise
+        """
+        history_file = Path(settings.history_file_path).resolve()
+        
+        # If history file doesn't exist, no change
+        if not history_file.exists():
+            return False
+        
+        # Load saved file hashes
+        saved_hashes = {}
+        if os.path.exists(settings.file_hash_path):
+            try:
+                with open(settings.file_hash_path, 'r') as f:
+                    saved_hashes = json.load(f)
+            except (json.JSONDecodeError, IOError) as e:
+                log_error(f"Error loading file hashes: {str(e)}")
+                return True  # Treat as changed to trigger re-indexing
+        
+        # Check if history file is in saved hashes and if hash changed
+        history_path_str = str(history_file)
+        if history_path_str not in saved_hashes:
+            # History file is new
+            return True
+        
+        # Check if hash changed
+        try:
+            current_hash = self._get_file_hash(history_path_str)
+            return current_hash != saved_hashes[history_path_str]
+        except Exception as e:
+            log_error(f"Error getting history file hash: {str(e)}")
+            return True  # Treat as changed to trigger re-indexing
+    
     def _get_changed_files(self) -> Tuple[List[str], List[str], List[str]]:
         """
-        Identify new, modified, and deleted files
+        Identify new, modified, and deleted files (excluding history.txt)
         Returns: (new_files, modified_files, deleted_files)
         """
         # Load saved file hashes
@@ -133,6 +168,7 @@ class RAGService:
         data_path = Path(settings.data_folder)
         supported_extensions = ['.txt', '.md', '.pdf', '.docx']
         history_file = Path(settings.history_file_path).resolve()
+        history_path_str = str(history_file)
         
         current_files = {}
         for filepath in data_path.rglob('*'):
@@ -142,18 +178,19 @@ class RAGService:
                 file_path = str(filepath)
                 current_files[file_path] = self._get_file_hash(file_path)
         
-        # Identify changes
+        # Identify changes (excluding history.txt from saved_hashes for deletion check)
         new_files = [f for f in current_files if f not in saved_hashes]
         modified_files = [f for f in current_files if f in saved_hashes and current_files[f] != saved_hashes[f]]
-        deleted_files = [f for f in saved_hashes if f not in current_files]
+        deleted_files = [f for f in saved_hashes if f not in current_files and f != history_path_str]
         
         return new_files, modified_files, deleted_files
     
     def _save_file_hashes(self):
-        """Save current file hashes to disk"""
+        """Save current file hashes to disk (including history.txt)"""
         data_path = Path(settings.data_folder)
         supported_extensions = ['.txt', '.md', '.pdf', '.docx']
         history_file = Path(settings.history_file_path).resolve()
+        history_path_str = str(history_file)
         
         file_hashes = {}
         for filepath in data_path.rglob('*'):
@@ -162,6 +199,10 @@ class RAGService:
             if filepath.is_file() and filepath.suffix in supported_extensions:
                 file_path = str(filepath)
                 file_hashes[file_path] = self._get_file_hash(file_path)
+        
+        # Also save history.txt hash if it exists
+        if history_file.exists():
+            file_hashes[history_path_str] = self._get_file_hash(history_path_str)
         
         # Create storage directory if needed
         storage_path = Path(settings.file_hash_path).parent
@@ -200,11 +241,14 @@ class RAGService:
             if not storage_path.exists():
                 storage_path.mkdir(parents=True)
             
-            # Check for file changes
+            # Check for file changes (excluding history.txt)
             new_files, modified_files, deleted_files = self._get_changed_files()
             files_to_embed = new_files + modified_files
             
-            has_changes = len(files_to_embed) > 0 or len(deleted_files) > 0
+            # Check if history.txt changed (only on startup, not during file watching)
+            history_changed = self._check_history_file_changed()
+            
+            has_changes = len(files_to_embed) > 0 or len(deleted_files) > 0 or history_changed
             index_exists = os.path.exists(settings.faiss_index_path) and os.path.exists(settings.metadata_path)
             
             # If force rebuild or no existing index, rebuild from scratch
@@ -230,6 +274,24 @@ class RAGService:
             files_to_remove = set(deleted_files + modified_files)
             if files_to_remove:
                 self._remove_files_from_index(files_to_remove)
+            
+            # Handle history.txt if it changed
+            if history_changed:
+                history_file = Path(settings.history_file_path).resolve()
+                history_path_str = str(history_file)
+                
+                # Check if history.txt chunks exist in the index
+                has_history_chunks = any(meta.get('file_path') == history_path_str for meta in self.metadata)
+                
+                if has_history_chunks:
+                    log_info("Updating history.txt in index (removing old chunks)")
+                    self._remove_files_from_index({history_path_str})
+                else:
+                    log_info("Adding history.txt to index (no previous chunks found)")
+                
+                # Add updated history.txt
+                if history_file.exists():
+                    self._add_files_to_index([history_path_str])
             
             # Add new/modified files
             if files_to_embed:
