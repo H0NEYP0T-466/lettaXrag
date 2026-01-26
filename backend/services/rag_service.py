@@ -351,7 +351,8 @@ class RAGService:
         
         for i, meta in enumerate(self.metadata):
             # Handle backward compatibility - old metadata might not have 'file_path'
-            meta_file_path = meta.get('file_path', meta.get('source', ''))
+            # Try 'file_path' first, fall back to 'source', then empty string
+            meta_file_path = meta.get('file_path') or meta.get('source') or ''
             if meta_file_path not in file_paths:
                 new_documents.append(self.documents[i])
                 new_metadata.append(meta)
