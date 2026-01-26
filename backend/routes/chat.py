@@ -138,9 +138,9 @@ async def upload_file(file: UploadFile = File(...)):
         
         log_info(f"File uploaded: {file.filename}")
         
-        # Trigger incremental re-indexing (not full rebuild)
+        # Trigger incremental re-indexing (not full rebuild, don't check history)
         log_info("Triggering incremental re-indexing...")
-        rag_service.initialize_index(force_rebuild=False)
+        rag_service.initialize_index(force_rebuild=False, check_history=False)
         
         return {
             "message": "File uploaded successfully",

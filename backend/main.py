@@ -25,9 +25,9 @@ async def lifespan(app: FastAPI):
         # Initialize MongoDB
         await db_service.connect()
         
-        # Initialize RAG service
+        # Initialize RAG service (check history.txt only at startup)
         log_info("Initializing RAG service...")
-        rag_service.initialize_index()
+        rag_service.initialize_index(check_history=True)
         
         # Initialize Letta service
         letta_service.initialize()
@@ -36,7 +36,7 @@ async def lifespan(app: FastAPI):
         global file_watcher
         file_watcher = FileWatcher(
             settings.data_folder,
-            lambda: rag_service.initialize_index(force_rebuild=False),  # Use incremental update
+            lambda: rag_service.initialize_index(force_rebuild=False, check_history=False),  # Don't check history during file watch
             ignore_file=settings.history_file_path  # Ignore history.txt changes
         )
         file_watcher.start()

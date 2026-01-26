@@ -233,8 +233,13 @@ class RAGService:
         
         return saved_hashes != current_hashes
     
-    def initialize_index(self, force_rebuild: bool = False):
-        """Initialize or load FAISS index with incremental updates"""
+    def initialize_index(self, force_rebuild: bool = False, check_history: bool = True):
+        """Initialize or load FAISS index with incremental updates
+        
+        Args:
+            force_rebuild: If True, rebuild the entire index from scratch
+            check_history: If True, check if history.txt has changed (only at startup)
+        """
         try:
             # Create storage directory if it doesn't exist
             storage_path = Path(settings.faiss_index_path).parent
@@ -246,7 +251,9 @@ class RAGService:
             files_to_embed = new_files + modified_files
             
             # Check if history.txt changed (only on startup, not during file watching)
-            history_changed = self._check_history_file_changed()
+            history_changed = False
+            if check_history:
+                history_changed = self._check_history_file_changed()
             
             has_changes = len(files_to_embed) > 0 or len(deleted_files) > 0 or history_changed
             index_exists = os.path.exists(settings.faiss_index_path) and os.path.exists(settings.metadata_path)
@@ -343,7 +350,9 @@ class RAGService:
         new_metadata = []
         
         for i, meta in enumerate(self.metadata):
-            if meta['file_path'] not in file_paths:
+            # Handle backward compatibility - old metadata might not have 'file_path'
+            meta_file_path = meta.get('file_path', meta.get('source', ''))
+            if meta_file_path not in file_paths:
                 new_documents.append(self.documents[i])
                 new_metadata.append(meta)
         
