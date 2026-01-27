@@ -39,6 +39,7 @@ backend/.env
 backend/storage/*.bin
 backend/storage/*.json
 backend/storage/*.pkl
+backend/storage/
 backend/data/*
 !backend/data/.gitkeep
 !backend/data/README.md

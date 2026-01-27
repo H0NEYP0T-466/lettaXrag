@@ -21,6 +21,7 @@ class RAGService:
         self.index = None
         self.documents = []
         self.metadata = []
+        self.embeddings = None  # ✅ Store embeddings to avoid re-encoding
         self.embedding_dim = 384  # Dimension for all-MiniLM-L6-v2
         
     def _get_file_hash(self, filepath: str) -> str:
@@ -254,6 +255,8 @@ class RAGService:
             history_changed = False
             if check_history:
                 history_changed = self._check_history_file_changed()
+                if history_changed:
+                    log_info("📝 History.txt has been updated since last startup")
             
             has_changes = len(files_to_embed) > 0 or len(deleted_files) > 0 or history_changed
             index_exists = os.path.exists(settings.faiss_index_path) and os.path.exists(settings.metadata_path)
@@ -291,10 +294,10 @@ class RAGService:
                 has_history_chunks = any(meta.get('file_path') == history_path_str for meta in self.metadata)
                 
                 if has_history_chunks:
-                    log_info("Updating history.txt in index (removing old chunks)")
+                    log_info("📝 Updating history.txt in index...")
                     self._remove_files_from_index({history_path_str})
                 else:
-                    log_info("Adding history.txt to index (no previous chunks found)")
+                    log_info("📝 Adding history.txt to index for the first time...")
                 
                 # Add updated history.txt
                 if history_file.exists():
@@ -316,6 +319,7 @@ class RAGService:
             self.index = faiss.IndexFlatL2(self.embedding_dim)
             self.documents = []
             self.metadata = []
+            self.embeddings = np.array([]).astype('float32').reshape(0, self.embedding_dim)
     
     def _build_full_index(self):
         """Build complete index from all documents"""
@@ -325,18 +329,19 @@ class RAGService:
         if not self.documents:
             log_info("No documents found. Creating empty index.")
             self.index = faiss.IndexFlatL2(self.embedding_dim)
+            self.embeddings = np.array([]).astype('float32').reshape(0, self.embedding_dim)
             self._save_index()
             self._save_file_hashes()
             return
         
         # Generate embeddings
         log_info(f"Encoding {len(self.documents)} document chunks...")
-        embeddings = self.model.encode(self.documents, show_progress_bar=True)
-        embeddings = np.array(embeddings).astype('float32')
+        self.embeddings = self.model.encode(self.documents, show_progress_bar=True)
+        self.embeddings = np.array(self.embeddings).astype('float32')
         
         # Create FAISS index
         self.index = faiss.IndexFlatL2(self.embedding_dim)
-        self.index.add(embeddings)
+        self.index.add(self.embeddings)
         
         # Save index and metadata
         self._save_index()
@@ -344,39 +349,43 @@ class RAGService:
         log_success(f"✅ Embeddings ready! Indexed {len(self.documents)} chunks from {len(set(m['source'] for m in self.metadata))} files")
     
     def _remove_files_from_index(self, file_paths: set):
-        """Remove chunks from specified files"""
-        # Find indices to keep
-        new_documents = []
-        new_metadata = []
+        """Remove chunks from specified files WITHOUT re-encoding everything"""
+        # Find indices to remove and keep
+        indices_to_remove = []
+        indices_to_keep = []
         
         for i, meta in enumerate(self.metadata):
-            # Handle backward compatibility - old metadata might not have 'file_path'
-            # Try 'file_path' first, fall back to 'source', then empty string
             meta_file_path = meta.get('file_path') or meta.get('source') or ''
-            if meta_file_path not in file_paths:
-                new_documents.append(self.documents[i])
-                new_metadata.append(meta)
+            if meta_file_path in file_paths:
+                indices_to_remove.append(i)
+            else:
+                indices_to_keep.append(i)
         
-        if not new_documents:
+        if not indices_to_remove:
+            log_info("No chunks to remove")
+            return
+        
+        log_info(f"🗑️  Removing {len(indices_to_remove)} chunks from index (keeping {len(indices_to_keep)} chunks)...")
+        
+        if not indices_to_keep:
             # All documents removed
             self.index = faiss.IndexFlatL2(self.embedding_dim)
             self.documents = []
             self.metadata = []
+            self.embeddings = np.array([]).astype('float32').reshape(0, self.embedding_dim)
             log_info("All documents removed from index")
             return
         
-        # Re-encode the kept documents
-        # Note: For large collections, consider storing embeddings separately
-        log_info(f"Re-encoding {len(new_documents)} kept chunks after removing {len(self.documents) - len(new_documents)} chunks...")
-        embeddings = self.model.encode(new_documents, show_progress_bar=False)
-        embeddings = np.array(embeddings).astype('float32')
+        # ✅ Keep embeddings without re-encoding
+        self.embeddings = self.embeddings[indices_to_keep]
+        self.documents = [self.documents[i] for i in indices_to_keep]
+        self.metadata = [self.metadata[i] for i in indices_to_keep]
         
-        # Create new index with kept embeddings
+        # Rebuild FAISS index with kept embeddings (no encoding needed!)
         self.index = faiss.IndexFlatL2(self.embedding_dim)
-        self.index.add(embeddings)
+        self.index.add(self.embeddings)
         
-        self.documents = new_documents
-        self.metadata = new_metadata
+        log_success(f"✅ Removed {len(indices_to_remove)} chunks without re-encoding")
     
     def _add_files_to_index(self, file_paths: List[str]):
         """Add chunks from specified files to index"""
@@ -387,7 +396,7 @@ class RAGService:
         
         for filepath in file_paths:
             path = Path(filepath)
-            log_info(f"Loading file: {path}")
+            log_info(f"📄 Loading file: {path.name}")
             
             text = ""
             if path.suffix in ['.txt', '.md']:
@@ -412,20 +421,27 @@ class RAGService:
             log_info("No new content to add")
             return
         
-        # Generate embeddings for new documents
-        log_info(f"Encoding {len(new_documents)} new chunks...")
+        # Generate embeddings for new documents only
+        log_info(f"🔢 Encoding {len(new_documents)} new chunks...")
         new_embeddings = self.model.encode(new_documents, show_progress_bar=True)
         new_embeddings = np.array(new_embeddings).astype('float32')
         
         # Add to index
         self.index.add(new_embeddings)
+        
+        # ✅ Append embeddings to stored embeddings
+        if self.embeddings is None or self.embeddings.shape[0] == 0:
+            self.embeddings = new_embeddings
+        else:
+            self.embeddings = np.vstack([self.embeddings, new_embeddings])
+        
         self.documents.extend(new_documents)
         self.metadata.extend(new_metadata)
         
         log_success(f"✅ Added {len(new_documents)} new chunks")
     
     def _save_index(self):
-        """Save FAISS index and metadata to disk"""
+        """Save FAISS index, embeddings, and metadata to disk"""
         # Save FAISS index
         faiss.write_index(self.index, settings.faiss_index_path)
         
@@ -437,9 +453,13 @@ class RAGService:
         docs_path = settings.metadata_path.replace('.json', '_docs.pkl')
         with open(docs_path, 'wb') as f:
             pickle.dump(self.documents, f)
+        
+        # ✅ Save embeddings separately
+        embeddings_path = settings.metadata_path.replace('.json', '_embeddings.npy')
+        np.save(embeddings_path, self.embeddings)
     
     def _load_index(self):
-        """Load FAISS index and metadata from disk"""
+        """Load FAISS index, embeddings, and metadata from disk"""
         # Load FAISS index
         self.index = faiss.read_index(settings.faiss_index_path)
         
@@ -451,6 +471,15 @@ class RAGService:
         docs_path = settings.metadata_path.replace('.json', '_docs.pkl')
         with open(docs_path, 'rb') as f:
             self.documents = pickle.load(f)
+        
+        # ✅ Load embeddings
+        embeddings_path = settings.metadata_path.replace('.json', '_embeddings.npy')
+        if os.path.exists(embeddings_path):
+            self.embeddings = np.load(embeddings_path)
+        else:
+            # Fallback: embeddings file doesn't exist (old version)
+            log_info("⚠️  Embeddings file not found. This is expected on first run with new code.")
+            self.embeddings = np.array([]).astype('float32').reshape(0, self.embedding_dim)
     
     def retrieve_context(self, query: str, k: int = 3) -> List[str]:
         """Retrieve top-k relevant document chunks for query"""
