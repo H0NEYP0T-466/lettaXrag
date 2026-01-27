@@ -514,7 +514,4 @@ class RAGService:
             'total_chunks': len(self.documents),
             'index_size': self.index.ntotal if self.index else 0
         }
-
-
-# Global RAG service instance
 rag_service = RAGService()
