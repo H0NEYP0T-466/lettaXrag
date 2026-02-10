@@ -116,7 +116,7 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
                 agent = self.client.agents.create(
                     name=self.agent_name,
                     llm_config={
-                        "model": "LongCat-Flash-Chat",
+                        "model": "LongCat-Flash-Lite",
                         "model_endpoint_type": "openai",
                         "model_endpoint": "https://api.longcat.chat/openai",
                         "context_window": 32000,

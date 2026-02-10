@@ -11,7 +11,7 @@ class LLMService:
             api_key=settings.longcat_api_key,
             base_url="https://api.longcat.chat/openai"
         )
-        self.model = "LongCat-Flash-Chat"
+        self.model = "LongCat-Flash-Lite"
 
     async def generate_response(self, prompt, rag_context=None, temperature=0.7, max_tokens=8192, use_memory=True):
         """Generate response from LLM with optional Letta memory."""
