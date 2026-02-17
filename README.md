@@ -1,8 +1,53 @@
 # LettaXRAG - Conversational AI with RAG & Personality
 
+<p align="center">
+  <img src="https://img.shields.io/github/license/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/github/stars/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Stars">
+  <img src="https://img.shields.io/github/forks/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Forks">
+  <img src="https://img.shields.io/github/issues/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Issues">
+  <img src="https://img.shields.io/github/issues-pr/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Pull Requests">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/github/last-commit/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Last Commit">
+  <img src="https://img.shields.io/github/commit-activity/m/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Commit Activity">
+  <img src="https://img.shields.io/github/languages/top/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Top Language">
+  <img src="https://img.shields.io/github/languages/count/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Languages">
+</p>
+
 A full-stack conversational AI system featuring **Isabella**, a sassy AI assistant powered by RAG (Retrieval-Augmented Generation) and comprehensive logging.
 
+<p align="center">
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-features">Features</a> •
+  <a href="#-api-endpoints">API</a> •
+  <a href="https://github.com/H0NEYP0T-466/lettaXrag/issues">Issues</a> •
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
+
 > **⚠️ Security Note**: Letta personality engine is disabled by default due to known vulnerabilities. See [SECURITY.md](SECURITY.md) for details. Isabella's personality is maintained through LLM system prompts.
+
+---
+
+## 📑 Table of Contents
+
+- [Features](#-features)
+- [Architecture](#️-architecture)
+- [Prerequisites](#-prerequisites)
+- [Quick Start](#-quick-start)
+- [Usage](#-usage)
+- [API Endpoints](#-api-endpoints)
+- [System Flow](#-system-flow)
+- [Customization](#-customization)
+- [Project Structure](#-project-structure)
+- [Tech Stack](#-tech-stack)
+- [Dependencies](#-dependencies)
+- [Troubleshooting](#-troubleshooting)
+- [Security Notes](#-security-notes)
+- [License](#-license)
+- [Contributing](#-contributing)
+
+---
 
 ## 🌟 Features
 
@@ -289,6 +334,86 @@ lettaXrag/
 └── package.json
 ```
 
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+<p>
+  <img src="https://img.shields.io/badge/React-19.2.0-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Vite-7.2.4-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
+  <img src="https://img.shields.io/badge/Zustand-5.0.10-000000?style=for-the-badge" alt="Zustand">
+</p>
+
+### Backend
+<p>
+  <img src="https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/FastAPI-0.109.1+-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/MongoDB-Latest-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB">
+</p>
+
+### AI & ML
+<p>
+  <img src="https://img.shields.io/badge/FAISS-CPU-00ADD8?style=for-the-badge" alt="FAISS">
+  <img src="https://img.shields.io/badge/Sentence_Transformers-Latest-FF6F00?style=for-the-badge" alt="Sentence Transformers">
+  <img src="https://img.shields.io/badge/OpenAI-Compatible-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI">
+</p>
+
+### Development & Build Tools
+<p>
+  <img src="https://img.shields.io/badge/ESLint-9.39.1-4B32C3?style=for-the-badge&logo=eslint&logoColor=white" alt="ESLint">
+  <img src="https://img.shields.io/badge/Uvicorn-Latest-499848?style=for-the-badge" alt="Uvicorn">
+  <img src="https://img.shields.io/badge/Rich-13.7.0+-009485?style=for-the-badge" alt="Rich">
+</p>
+
+---
+
+## 📦 Dependencies
+
+### Frontend Dependencies
+
+#### Runtime
+![react](https://img.shields.io/npm/v/react?style=for-the-badge&label=react&logo=react&color=61DAFB)
+![react-dom](https://img.shields.io/npm/v/react-dom?style=for-the-badge&label=react-dom&logo=react&color=61DAFB)
+![axios](https://img.shields.io/npm/v/axios?style=for-the-badge&label=axios&color=5A29E4)
+![zustand](https://img.shields.io/npm/v/zustand?style=for-the-badge&label=zustand&color=000000)
+![react-markdown](https://img.shields.io/npm/v/react-markdown?style=for-the-badge&label=react-markdown&color=000000)
+![react-syntax-highlighter](https://img.shields.io/npm/v/react-syntax-highlighter?style=for-the-badge&label=react-syntax-highlighter&color=000000)
+![katex](https://img.shields.io/npm/v/katex?style=for-the-badge&label=katex&color=008080)
+![rehype-katex](https://img.shields.io/npm/v/rehype-katex?style=for-the-badge&label=rehype-katex&color=000000)
+![remark-gfm](https://img.shields.io/npm/v/remark-gfm?style=for-the-badge&label=remark-gfm&color=000000)
+![remark-math](https://img.shields.io/npm/v/remark-math?style=for-the-badge&label=remark-math&color=000000)
+
+#### Development
+![typescript](https://img.shields.io/npm/v/typescript?style=for-the-badge&label=typescript&logo=typescript&color=3178C6)
+![vite](https://img.shields.io/npm/v/vite?style=for-the-badge&label=vite&logo=vite&color=646CFF)
+![eslint](https://img.shields.io/npm/v/eslint?style=for-the-badge&label=eslint&logo=eslint&color=4B32C3)
+![typescript-eslint](https://img.shields.io/npm/v/typescript-eslint?style=for-the-badge&label=typescript-eslint&color=3178C6)
+
+### Backend Dependencies
+
+#### Runtime
+- **FastAPI** (>=0.109.1) - Modern async web framework
+- **Uvicorn** (>=0.24.0) - ASGI server
+- **PyMongo** (>=4.6.0) - MongoDB driver
+- **Motor** (>=3.3.2) - Async MongoDB driver
+- **Pydantic** (>=2.5.0) - Data validation
+- **FAISS-CPU** (>=1.7.4) - Vector similarity search
+- **Sentence-Transformers** (>=2.2.2) - Text embeddings
+- **OpenAI** (>=1.6.1) - LLM API client
+- **Letta** (>=0.16.0) - Personality engine (optional)
+- **Rich** (>=13.7.0) - Console logging
+- **Watchdog** (>=3.0.0) - File system monitoring
+- **Python-DOCX** (>=1.1.0) - Word document processing
+- **PyPDF2** (>=3.0.1) - PDF processing
+
+#### Development
+- **python-dotenv** (>=1.0.0) - Environment variable management
+- **python-multipart** (>=0.0.18) - Form data parsing
+
+---
+
 ## 🐛 Troubleshooting
 
 ### MongoDB Connection Error
@@ -345,13 +470,29 @@ VITE_API_URL=http://localhost:8001
 
 **For Production Deployment**: See the production security checklist in [SECURITY.md](SECURITY.md)
 
+---
+
 ## 📝 License
 
-MIT License - feel free to use this project as you wish!
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+### Quick Contribution Guide
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feat/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feat/amazing-feature`)
+5. Open a Pull Request
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+---
 
 ## 📧 Support
 
