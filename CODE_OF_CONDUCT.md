@@ -60,7 +60,8 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the project maintainers responsible for enforcement at
-[INSERT CONTACT EMAIL HERE].
+the project's [GitHub Issues](https://github.com/H0NEYP0T-466/lettaXrag/issues)
+or through GitHub's private reporting features.
 
 All complaints will be reviewed and investigated promptly and fairly.
 
