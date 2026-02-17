@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/H0NEYP0T-466/lettaXrag/discussions
+    about: For questions and community support
+  - name: 🛡 Security
+    url: https://github.com/H0NEYP0T-466/lettaXrag/security/policy
+    about: Report security vulnerabilities privately
+  - name: 📚 Documentation
+    url: https://github.com/H0NEYP0T-466/lettaXrag/blob/main/README.md
+    about: Read the project documentation
