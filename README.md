@@ -39,6 +39,34 @@ A full-stack conversational AI system featuring **Isabella**, a sassy AI assista
 - React-Syntax-Highlighter for code blocks
 - Full table rendering support
 
+## 🛠️ Tech Stack & Dependencies
+
+### Tech Stack
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/FastAPI-0.109.1%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/MongoDB-*-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB">
+  <img src="https://img.shields.io/badge/FAISS-CPU-000000?style=for-the-badge&logo=meta&logoColor=white" alt="FAISS">
+  <img src="https://img.shields.io/badge/Sentence_Transformers-*-FF6F00?style=for-the-badge&logo=huggingface&logoColor=white" alt="Sentence Transformers">
+  <img src="https://img.shields.io/badge/Rich-*-FF69B4?style=for-the-badge&logo=python&logoColor=white" alt="Rich">
+  <img src="https://img.shields.io/badge/Letta-*-8A2BE2?style=for-the-badge" alt="Letta">
+  <img src="https://img.shields.io/badge/LongCat_LLM-*-000000?style=for-the-badge" alt="LongCat LLM">
+  <br>
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-*-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Zustand-*-000000?style=for-the-badge&logo=react&logoColor=white" alt="Zustand">
+  <img src="https://img.shields.io/badge/Axios-*-5A29E4?style=for-the-badge" alt="Axios">
+  <img src="https://img.shields.io/badge/Vite-*-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
+  <img src="https://img.shields.io/badge/KaTeX-*-000000?style=for-the-badge" alt="KaTeX">
+  <img src="https://img.shields.io/badge/React_Markdown-*-000000?style=for-the-badge" alt="React Markdown">
+</p>
+
+### Dependencies
+**Backend** – Full list with exact versions & security patches in [`backend/requirements.txt`](backend/requirements.txt)  
+**Frontend** – Full list with exact versions in [`package.json`](package.json)  
+
+> All dependencies are kept up-to-date with patched vulnerabilities (see [SECURITY.md](SECURITY.md)).
+
 ## 📋 Prerequisites
 
 - **Node.js** 18+ and npm
