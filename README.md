@@ -88,7 +88,7 @@ A full-stack conversational AI system featuring **Isabella**, a sassy AI assista
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React">
   <img src="https://img.shields.io/badge/TypeScript-Latest-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/Vite-Latest-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
-  <img src="https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js">
+  <img src="https://img.shields.io/badge/Node.js-20%2B-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js">
   <br>
   <img src="https://img.shields.io/badge/Zustand-State-000000?style=for-the-badge&logo=react&logoColor=white" alt="Zustand">
   <img src="https://img.shields.io/badge/Axios-HTTP-5A29E4?style=for-the-badge&logo=axios&logoColor=white" alt="Axios">
@@ -108,7 +108,7 @@ A full-stack conversational AI system featuring **Isabella**, a sassy AI assista
 
 ## 📋 Prerequisites
 
-- **Node.js** 18+ and npm
+- **Node.js** 20+ and npm
 - **Python** 3.9+
 - **MongoDB** (local or remote)
 - **LongCat API Key** ([Get one here](https://longcat.chat))
