@@ -1,5 +1,29 @@
 # LettaXRAG - Conversational AI with RAG & Personality
 
+<p align="center">
+  <!-- Repository Stats -->
+  <img src="https://img.shields.io/github/license/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="GitHub License">
+  <img src="https://img.shields.io/github/stars/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="GitHub Stars">
+  <img src="https://img.shields.io/github/forks/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="GitHub Forks">
+  <img src="https://img.shields.io/github/issues/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="GitHub Issues">
+  <img src="https://img.shields.io/github/issues-pr/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="GitHub Pull Requests">
+  <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=for-the-badge" alt="Contributions Welcome">
+  <br>
+  <!-- Repository Activity -->
+  <img src="https://img.shields.io/github/last-commit/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Last Commit">
+  <img src="https://img.shields.io/github/commit-activity/m/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Commit Activity">
+  <img src="https://img.shields.io/github/repo-size/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Repo Size">
+  <img src="https://img.shields.io/github/languages/code-size/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Code Size">
+  <br>
+  <!-- Language Stats -->
+  <img src="https://img.shields.io/github/languages/top/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Top Language">
+  <img src="https://img.shields.io/github/languages/count/H0NEYP0T-466/lettaXrag?style=for-the-badge" alt="Languages Count">
+  <br>
+  <!-- Community & Documentation -->
+  <img src="https://img.shields.io/badge/documentation-yes-brightgreen.svg?style=for-the-badge" alt="Documentation">
+  <img src="https://img.shields.io/badge/Open%20Source-%E2%9D%A4-red.svg?style=for-the-badge" alt="Open Source Love">
+</p>
+
 A full-stack conversational AI system featuring **Isabella**, a sassy AI assistant powered by RAG (Retrieval-Augmented Generation) and comprehensive logging.
 
 > **⚠️ Security Note**: Letta personality engine is disabled by default due to known vulnerabilities. See [SECURITY.md](SECURITY.md) for details. Isabella's personality is maintained through LLM system prompts.
@@ -41,24 +65,39 @@ A full-stack conversational AI system featuring **Isabella**, a sassy AI assista
 
 ## 🛠️ Tech Stack & Dependencies
 
-### Tech Stack
+### Backend Stack
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/FastAPI-0.109.1%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
-  <img src="https://img.shields.io/badge/MongoDB-*-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB">
-  <img src="https://img.shields.io/badge/FAISS-CPU-000000?style=for-the-badge&logo=meta&logoColor=white" alt="FAISS">
-  <img src="https://img.shields.io/badge/Sentence_Transformers-*-FF6F00?style=for-the-badge&logo=huggingface&logoColor=white" alt="Sentence Transformers">
-  <img src="https://img.shields.io/badge/Rich-*-FF69B4?style=for-the-badge&logo=python&logoColor=white" alt="Rich">
-  <img src="https://img.shields.io/badge/Letta-*-8A2BE2?style=for-the-badge" alt="Letta">
-  <img src="https://img.shields.io/badge/LongCat_LLM-*-000000?style=for-the-badge" alt="LongCat LLM">
+  <img src="https://img.shields.io/badge/MongoDB-Latest-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB">
+  <img src="https://img.shields.io/badge/Motor-Async-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="Motor">
   <br>
+  <img src="https://img.shields.io/badge/FAISS-CPU-0467DF?style=for-the-badge&logo=meta&logoColor=white" alt="FAISS">
+  <img src="https://img.shields.io/badge/Sentence_Transformers-Latest-FF6F00?style=for-the-badge&logo=huggingface&logoColor=white" alt="Sentence Transformers">
+  <img src="https://img.shields.io/badge/PyPDF2-Latest-FF2D20?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="PyPDF2">
+  <img src="https://img.shields.io/badge/Python_Docx-Latest-2B579A?style=for-the-badge&logo=microsoftword&logoColor=white" alt="Python-docx">
+  <br>
+  <img src="https://img.shields.io/badge/Rich-Console-FF69B4?style=for-the-badge&logo=python&logoColor=white" alt="Rich">
+  <img src="https://img.shields.io/badge/Watchdog-Latest-FFA500?style=for-the-badge&logo=python&logoColor=white" alt="Watchdog">
+  <img src="https://img.shields.io/badge/Letta-0.16.0-8A2BE2?style=for-the-badge" alt="Letta">
+  <img src="https://img.shields.io/badge/LongCat_LLM-API-000000?style=for-the-badge" alt="LongCat LLM">
+</p>
+
+### Frontend Stack
+<p align="center">
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React">
-  <img src="https://img.shields.io/badge/TypeScript-*-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Zustand-*-000000?style=for-the-badge&logo=react&logoColor=white" alt="Zustand">
-  <img src="https://img.shields.io/badge/Axios-*-5A29E4?style=for-the-badge" alt="Axios">
-  <img src="https://img.shields.io/badge/Vite-*-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
-  <img src="https://img.shields.io/badge/KaTeX-*-000000?style=for-the-badge" alt="KaTeX">
-  <img src="https://img.shields.io/badge/React_Markdown-*-000000?style=for-the-badge" alt="React Markdown">
+  <img src="https://img.shields.io/badge/TypeScript-Latest-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Vite-Latest-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
+  <img src="https://img.shields.io/badge/Node.js-20%2B-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js">
+  <br>
+  <img src="https://img.shields.io/badge/Zustand-State-000000?style=for-the-badge&logo=react&logoColor=white" alt="Zustand">
+  <img src="https://img.shields.io/badge/Axios-HTTP-5A29E4?style=for-the-badge&logo=axios&logoColor=white" alt="Axios">
+  <img src="https://img.shields.io/badge/React_Markdown-Latest-000000?style=for-the-badge&logo=markdown&logoColor=white" alt="React Markdown">
+  <img src="https://img.shields.io/badge/KaTeX-Math-228BE6?style=for-the-badge" alt="KaTeX">
+  <br>
+  <img src="https://img.shields.io/badge/Rehype-Plugins-663399?style=for-the-badge" alt="Rehype">
+  <img src="https://img.shields.io/badge/Remark-Plugins-663399?style=for-the-badge" alt="Remark">
+  <img src="https://img.shields.io/badge/React_Syntax_Highlighter-Latest-F7DF1E?style=for-the-badge" alt="Syntax Highlighter">
 </p>
 
 ### Dependencies
@@ -69,7 +108,7 @@ A full-stack conversational AI system featuring **Isabella**, a sassy AI assista
 
 ## 📋 Prerequisites
 
-- **Node.js** 18+ and npm
+- **Node.js** 20+ and npm
 - **Python** 3.9+
 - **MongoDB** (local or remote)
 - **LongCat API Key** ([Get one here](https://longcat.chat))
