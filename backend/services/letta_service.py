@@ -113,8 +113,15 @@ Mindset & Habits: Self-disciplined, self-driven, perfectionist. Competes only wi
 Personality & Traits: Strong sense of responsibility as eldest sibling. Motivation: make parents proud, achieve personal success, and earn enough to fulfill parents’ wishes. Independent, prefers handling problems alone. Family-oriented and vision-driven: avoids basic projects, aims for standout work. Hardworking and disciplined but very self-critical. Sometimes doubts if hard work is worth it, especially late at night. Struggles with sleep and overthinking.Loves philosophy, psychology, laws of nature and physics and questions existence. Enjoys deep conversations on abstract topics."""
 
     def _ensure_providers(self):
-        """Register or update BYOK providers in the Letta server with the API keys
-        from settings so that agents can make authenticated calls to each provider."""
+        """Register BYOK providers in the Letta server with the API keys from
+        settings so that agents can make authenticated calls to each provider.
+
+        We always delete and recreate each provider instead of PATCHing so that
+        the latest API key from .env is stored correctly.  Letta internally
+        stores keys in an encrypted column (api_key_enc); PATCHing via the
+        deprecated `api_key` field can leave a stale key in that column,
+        causing 401 errors even though the settings key is correct.
+        """
         import httpx
 
         base_url = (settings.letta_base_url or "http://localhost:8283").rstrip("/")
@@ -141,40 +148,56 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
                         continue  # skip providers whose keys are not configured
 
                     name = provider["name"]
+
+                    # Delete the existing provider first so it is always
+                    # recreated with the latest API key from settings.
+                    # PATCHing does not reliably update the encrypted key
+                    # column (api_key_enc) used internally by Letta, which
+                    # causes 401 errors even when the settings key is correct.
+                    # If DELETE fails we fall back to PATCH so the provider is
+                    # not left completely unconfigured.
+                    deleted = False
                     if name in existing_by_name:
-                        # Update the stored API key so it always matches settings
-                        update_resp = http_client.patch(
+                        del_resp = http_client.delete(
                             f"{base_url}/v1/providers/{existing_by_name[name]}",
-                            json={"api_key": api_key},
                             headers=headers,
                         )
-                        if update_resp.status_code in (200, 201):
-                            log_info(f"Updated BYOK provider '{name}'")
+                        if del_resp.status_code in (200, 204):
+                            deleted = True
                         else:
                             log_error(
-                                f"Failed to update provider '{name}': "
-                                f"{update_resp.status_code} – {update_resp.text}"
+                                f"Failed to delete provider '{name}' before recreating "
+                                f"({del_resp.status_code}); falling back to PATCH"
                             )
+                            patch_body: dict = {"api_key": api_key}
+                            if "base_url" in provider:
+                                patch_body["base_url"] = provider["base_url"]
+                            http_client.patch(
+                                f"{base_url}/v1/providers/{existing_by_name[name]}",
+                                json=patch_body,
+                                headers=headers,
+                            )
+                            continue  # skip the CREATE below
+
+                    create_body = {
+                        "name": name,
+                        "provider_type": provider["provider_type"],
+                        "api_key": api_key,
+                    }
+                    if "base_url" in provider:
+                        create_body["base_url"] = provider["base_url"]
+                    create_resp = http_client.post(
+                        f"{base_url}/v1/providers/",
+                        json=create_body,
+                        headers=headers,
+                    )
+                    if create_resp.status_code in (200, 201):
+                        log_info(f"Registered BYOK provider '{name}'")
                     else:
-                        create_body = {
-                            "name": name,
-                            "provider_type": provider["provider_type"],
-                            "api_key": api_key,
-                        }
-                        if "base_url" in provider:
-                            create_body["base_url"] = provider["base_url"]
-                        create_resp = http_client.post(
-                            f"{base_url}/v1/providers/",
-                            json=create_body,
-                            headers=headers,
+                        log_error(
+                            f"Failed to register provider '{name}': "
+                            f"{create_resp.status_code} – {create_resp.text}"
                         )
-                        if create_resp.status_code in (200, 201):
-                            log_info(f"Registered BYOK provider '{name}'")
-                        else:
-                            log_error(
-                                f"Failed to register provider '{name}': "
-                                f"{create_resp.status_code} – {create_resp.text}"
-                            )
         except Exception as e:
             log_error(f"Error ensuring Letta providers: {str(e)}")
 

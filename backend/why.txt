@@ -1,0 +1,168 @@
+================================================================================
+  WHY NON-LONGCAT MODELS FAIL WITH LETTA — AND HOW TO FIX THEM
+================================================================================
+
+--------------------------------------------------------------------------------
+THE SHORT ANSWER
+--------------------------------------------------------------------------------
+
+When the backend starts, it calls _ensure_providers() to register every LLM
+provider (Cerebras, Groq, Mistral, LongCat) inside the local Letta server so
+that Isabella's memory agents can use them.
+
+The old code used an HTTP PATCH request to update an already-registered
+provider's API key.  Letta ≥ 0.16 stores API keys in an *encrypted* database
+column called api_key_enc rather than the plain api_key column. PATCHing via
+the deprecated api_key field can silently fail to update api_key_enc, so the
+Letta agent continues to use whatever old or placeholder key was stored there
+first — even though your .env file has the correct key.  This is why you see:
+
+    Error code: 401 – Authentication failed with the LLM model provider.
+    "Wrong API Key"
+
+The fix: delete the stale provider record first, then create a brand-new one.
+DELETE → POST guarantees that api_key_enc is always written fresh from your
+.env values on every server start.
+
+--------------------------------------------------------------------------------
+WHY LONGCAT WORKS BUT OTHERS DON'T
+--------------------------------------------------------------------------------
+
+1. LongCat uses provider_type = "openai"
+   ------------------------------------------
+   Letta has native, well-tested support for the "openai" provider type.
+   LongCat's API is OpenAI-compatible (https://api.longcat.chat/openai), so it
+   is registered as an openai provider with a custom base_url.  Letta can:
+   • list available models from it
+   • authenticate calls correctly
+   • store/retrieve the API key without issues
+
+2. Cerebras uses provider_type = "cerebras"
+   ------------------------------------------
+   Letta's installed version (≥ 0.16.x) may not include a full provider class
+   for type "cerebras".  This causes the warning:
+
+       No provider class found for type 'cerebras'
+
+   That warning only affects model-list syncing (the nightly job that discovers
+   available models).  The *actual* LLM call still goes through because Letta
+   falls back to an OpenAI-compatible HTTP client aimed at
+   https://api.cerebras.ai/v1.  So the endpoint is right — but the stored API
+   key is wrong (see above), hence the 401.
+
+3. Groq uses provider_type = "groq"
+   ------------------------------------------
+   Letta does have a groq provider class, so model syncing works — but only if
+   the API key stored in Letta is valid.  If the key is stale (old PATCH didn't
+   update api_key_enc), you see:
+
+       Failed to sync models for provider 'byok-groq':
+       Client error '401 Unauthorized' for url https://api.groq.com/openai/v1/models
+
+   Same root cause: stale key in the encrypted column.
+
+4. Mistral uses provider_type = "mistral"
+   ------------------------------------------
+   Same situation as Cerebras — Letta's installed version may warn
+   "No provider class found for type 'mistral'" and fall back to
+   an OpenAI-compatible client.  Authentication still fails because the
+   stored key is stale.
+
+--------------------------------------------------------------------------------
+CAN WE PASS THE API KEY THE SAME WAY AS LONGCAT?
+--------------------------------------------------------------------------------
+
+Technically yes — you could register Cerebras, Groq, and Mistral all as
+provider_type = "openai" with their respective base URLs:
+
+    Cerebras  → base_url = https://api.cerebras.ai/v1
+    Groq      → base_url = https://api.groq.com/openai/v1
+    Mistral   → base_url = https://api.mistral.ai/v1
+
+All three providers offer an OpenAI-compatible REST API.  Changing their
+provider_type to "openai" would:
+  • eliminate the "No provider class found" warnings
+  • let Letta sync their model lists
+
+However the model handles stored in agents (e.g. "cerebras/gpt-oss-120b")
+reference the *provider name*, not the type.  As long as the provider name
+stays the same ("cerebras", "byok-groq", "byok-mistral"), switching the type
+only changes how Letta introspects the provider — it does not change how the
+agent resolves the model handle.
+
+The current code keeps the native types (cerebras, groq, mistral) because
+newer Letta versions fully support them.  The DELETE → POST fix already solves
+the authentication problem without touching the provider types.
+
+--------------------------------------------------------------------------------
+SOLUTIONS (APPLIED IN THIS REPO)
+--------------------------------------------------------------------------------
+
+Solution 1 — DELETE + CREATE instead of PATCH  ← IMPLEMENTED
+--------------------------------------------------------------
+_ensure_providers() now:
+  1. Lists existing providers in Letta.
+  2. For each provider it needs to register, if a record already exists it
+     sends DELETE /v1/providers/{id} first.
+  3. Then sends POST /v1/providers/ to create a fresh record with the API key
+     straight from settings (i.e. your .env file).
+
+This guarantees api_key_enc is always written with the latest key on every
+server start, eliminating stale-key 401 errors.
+
+Solution 2 — Set LETTA_ENCRYPTION_KEY in your .env  ← OPTIONAL (recommended)
+-------------------------------------------------------------------------------
+Letta warns:
+
+    No encryption key configured. Storing Secret value as plaintext in _enc column.
+
+Set a random 32-byte hex string so your API keys are encrypted at rest:
+
+    LETTA_ENCRYPTION_KEY=<64-character hexadecimal string representing 32 bytes>
+
+Without this, keys are stored as plaintext in the Letta SQLite database.
+This does not affect authentication but is a security best practice.
+
+Solution 3 — Keep provider types as openai for maximum compatibility
+----------------------------------------------------------------------
+If you keep getting "No provider class found" warnings with your Letta version,
+you can change provider_type to "openai" and add the appropriate base_url in
+backend/services/letta_service.py:
+
+    {
+        "name": "cerebras",
+        "provider_type": "openai",        # ← change from "cerebras"
+        "api_key_attr": "cerebras_api_key",
+        "base_url": "https://api.cerebras.ai/v1",
+    },
+    {
+        "name": "byok-groq",
+        "provider_type": "openai",        # ← change from "groq"
+        "api_key_attr": "groq_api_key",
+        "base_url": "https://api.groq.com/openai/v1",
+    },
+    {
+        "name": "byok-mistral",
+        "provider_type": "openai",        # ← change from "mistral"
+        "api_key_attr": "mistral_api_key",
+        "base_url": "https://api.mistral.ai/v1",
+    },
+
+This makes every provider look like a generic OpenAI-compatible endpoint to
+Letta, which is the most portable option and eliminates the provider-class
+warnings entirely.
+
+--------------------------------------------------------------------------------
+QUICK SUMMARY TABLE
+--------------------------------------------------------------------------------
+
+Provider   Type      Works?  Reason it failed before          Fix
+--------   --------  ------  --------------------------------  ----------------
+LongCat    openai    ✅ YES  n/a                               n/a
+Cerebras   cerebras  ❌ NO   Stale key in api_key_enc          DELETE+CREATE
+Groq       groq      ❌ NO   Stale key in api_key_enc          DELETE+CREATE
+Mistral    mistral   ❌ NO   Stale key in api_key_enc          DELETE+CREATE
+
+After the DELETE+CREATE fix all four providers will authenticate correctly.
+
+================================================================================
