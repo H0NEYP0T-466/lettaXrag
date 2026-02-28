@@ -52,17 +52,17 @@ async def chat(request: ChatRequest):
         
         # Retrieve relevant context from RAG (skip if use_rag is disabled)
         rag_context = []
-        if request.use_rag is not False:
+        if request.use_rag:
             rag_context = rag_service.retrieve_context(request.message, k=3)
             log_rag_results(rag_context)
         else:
             log_info("RAG disabled by user toggle")
         
         # Generate response from LLM (Letta handles memory inside this)
-        use_letta = request.use_letta is not False
+        use_letta = bool(request.use_letta)
         llm_response = await llm_service.generate_response(
             prompt=request.message,  # Send original message, not Letta-processed
-            rag_context=rag_context if request.use_rag is not False else None,
+            rag_context=rag_context,
             model=request.model or "longcat",
             use_memory=use_letta,
         )
