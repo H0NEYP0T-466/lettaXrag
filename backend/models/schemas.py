@@ -6,6 +6,7 @@ from datetime import datetime
 class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
+    model: Optional[str] = "longcat"
 
 
 class ChatResponse(BaseModel):

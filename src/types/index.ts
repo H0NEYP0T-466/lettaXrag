@@ -15,6 +15,7 @@ export interface ChatResponse {
 export interface ChatRequest {
   message: string;
   session_id?: string;
+  model?: string;
 }
 
 export interface HealthResponse {
