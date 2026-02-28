@@ -9,57 +9,68 @@ from config import settings
 from utils.logger import log_info, log_error, log_letta_processing
 from typing import Optional
 
-MODEL_LLM_CONFIGS = {
-    "longcat": {
-        "model": "LongCat-Flash-Lite",
-        "model_endpoint_type": "openai",
-        "model_endpoint": "https://api.longcat.chat/openai",
-        "context_window": 32000,
-        "put_inner_thoughts_in_kwargs": True,
-    },
-    "cerebras": {
-        "model": "gpt-oss-120b",
-        "model_endpoint_type": "openai",
-        "model_endpoint": "https://api.cerebras.ai/v1",
-        "context_window": 32000,
-        "put_inner_thoughts_in_kwargs": True,
-    },
-    "llama-4-maverick": {
-        "model": "meta-llama/llama-4-maverick-17b-128e-instruct",
-        "model_endpoint_type": "openai",
-        "model_endpoint": "https://api.groq.com/openai/v1",
-        "context_window": 32000,
-        "put_inner_thoughts_in_kwargs": True,
-    },
-    "llama-4-scout": {
-        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
-        "model_endpoint_type": "openai",
-        "model_endpoint": "https://api.groq.com/openai/v1",
-        "context_window": 32000,
-        "put_inner_thoughts_in_kwargs": True,
-    },
-    "kimi-k2-instruct-0905": {
-        "model": "moonshotai/kimi-k2-instruct-0905",
-        "model_endpoint_type": "openai",
-        "model_endpoint": "https://api.groq.com/openai/v1",
-        "context_window": 32000,
-        "put_inner_thoughts_in_kwargs": True,
-    },
-    "kimi-k2-instruct": {
-        "model": "moonshotai/kimi-k2-instruct",
-        "model_endpoint_type": "openai",
-        "model_endpoint": "https://api.groq.com/openai/v1",
-        "context_window": 32000,
-        "put_inner_thoughts_in_kwargs": True,
-    },
-    "mistral-large": {
-        "model": "mistral-large-2411",
-        "model_endpoint_type": "openai",
-        "model_endpoint": "https://api.mistral.ai/v1",
-        "context_window": 32000,
-        "put_inner_thoughts_in_kwargs": True,
-    },
-}
+def _build_llm_configs():
+    return {
+        "longcat": {
+            "model": "LongCat-Flash-Lite",
+            "model_endpoint_type": "openai",
+            "model_endpoint": "https://api.longcat.chat/openai",
+            "model_endpoint_api_key": settings.longcat_api_key,
+            "context_window": 32000,
+            "put_inner_thoughts_in_kwargs": True,
+        },
+        "cerebras": {
+            "model": "gpt-oss-120b",
+            "model_endpoint_type": "openai",
+            "model_endpoint": "https://api.cerebras.ai/v1",
+            "model_endpoint_api_key": settings.cerebras_api_key,
+            "context_window": 32000,
+            "put_inner_thoughts_in_kwargs": True,
+        },
+        "llama-4-maverick": {
+            "model": "meta-llama/llama-4-maverick-17b-128e-instruct",
+            "model_endpoint_type": "openai",
+            "model_endpoint": "https://api.groq.com/openai/v1",
+            "model_endpoint_api_key": settings.groq_api_key,
+            "context_window": 32000,
+            "put_inner_thoughts_in_kwargs": True,
+        },
+        "llama-4-scout": {
+            "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+            "model_endpoint_type": "openai",
+            "model_endpoint": "https://api.groq.com/openai/v1",
+            "model_endpoint_api_key": settings.groq_api_key,
+            "context_window": 32000,
+            "put_inner_thoughts_in_kwargs": True,
+        },
+        "kimi-k2-instruct-0905": {
+            "model": "moonshotai/kimi-k2-instruct-0905",
+            "model_endpoint_type": "openai",
+            "model_endpoint": "https://api.groq.com/openai/v1",
+            "model_endpoint_api_key": settings.groq_api_key,
+            "context_window": 32000,
+            "put_inner_thoughts_in_kwargs": True,
+        },
+        "kimi-k2-instruct": {
+            "model": "moonshotai/kimi-k2-instruct",
+            "model_endpoint_type": "openai",
+            "model_endpoint": "https://api.groq.com/openai/v1",
+            "model_endpoint_api_key": settings.groq_api_key,
+            "context_window": 32000,
+            "put_inner_thoughts_in_kwargs": True,
+        },
+        "mistral-large": {
+            "model": "mistral-large-2411",
+            "model_endpoint_type": "openai",
+            "model_endpoint": "https://api.mistral.ai/v1",
+            "model_endpoint_api_key": settings.mistral_api_key,
+            "context_window": 32000,
+            "put_inner_thoughts_in_kwargs": True,
+        },
+    }
+
+
+MODEL_LLM_CONFIGS = _build_llm_configs()
 
 
 class LettaService:
