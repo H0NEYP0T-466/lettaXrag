@@ -57,7 +57,8 @@ async def chat(request: ChatRequest):
         # Generate response from LLM (Letta handles memory inside this)
         llm_response = await llm_service.generate_response(
             prompt=request.message,  # Send original message, not Letta-processed
-            rag_context=rag_context
+            rag_context=rag_context,
+            model=request.model or "longcat"
         )
         
         log_outgoing_response(llm_response)

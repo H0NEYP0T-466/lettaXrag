@@ -4,7 +4,10 @@ from typing import Optional
 
 class Settings(BaseSettings):
     mongodb_uri: str = "mongodb://localhost:27017/lettaXrag"
-    longcat_api_key: str
+    longcat_api_key: Optional[str] = None
+    cerebras_api_key: Optional[str] = None
+    groq_api_key: Optional[str] = None
+    mistral_api_key: Optional[str] = None
     letta_api_key: Optional[str] = None
     letta_base_url: Optional[str] = "http://localhost:8283"  # Default to local Letta server
     data_folder: str = "./data"

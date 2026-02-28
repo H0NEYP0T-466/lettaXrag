@@ -8,11 +8,13 @@ interface ChatState {
   isTyping: boolean;
   isDarkMode: boolean;
   isConnected: boolean;
+  selectedModel: string;
   addMessage: (message: Message) => void;
   setTyping: (typing: boolean) => void;
   toggleTheme: () => void;
   setConnected: (connected: boolean) => void;
   clearMessages: () => void;
+  setSelectedModel: (model: string) => void;
 }
 
 export const useChatStore = create<ChatState>()(
@@ -23,12 +25,14 @@ export const useChatStore = create<ChatState>()(
       isTyping: false,
       isDarkMode: true,
       isConnected: false,
+      selectedModel: 'longcat',
       addMessage: (message) =>
         set((state) => ({ messages: [...state.messages, message] })),
       setTyping: (typing) => set({ isTyping: typing }),
       toggleTheme: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
       setConnected: (connected) => set({ isConnected: connected }),
       clearMessages: () => set({ messages: [] }),
+      setSelectedModel: (model) => set({ selectedModel: model }),
     }),
     {
       name: 'chat-storage',
@@ -36,6 +40,7 @@ export const useChatStore = create<ChatState>()(
         messages: state.messages,
         sessionId: state.sessionId,
         isDarkMode: state.isDarkMode,
+        selectedModel: state.selectedModel,
       }),
       // Handle Date serialization/deserialization
       storage: {

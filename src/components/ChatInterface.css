@@ -56,6 +56,23 @@
   background: #0a0a0a;
 }
 
+.model-selector {
+  background: #0a0a0a;
+  color: #00d4ff;
+  border: 1px solid #1a1a1a;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  outline: none;
+  margin-left: 0.5rem;
+}
+
+.model-selector:hover,
+.model-selector:focus {
+  border-color: #00d4ff;
+}
+
 /* Messages Container */
 .messages-container {
   flex: 1;
