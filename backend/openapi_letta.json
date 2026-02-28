@@ -5207,7 +5207,7 @@
               "schema": {
                 "anyOf": [
                   {
-                    "$ref": "#/components/schemas/UpdateStdioMCPServer"
+                    "$ref": "#/components/schemas/letta__schemas__mcp__UpdateStdioMCPServer"
                   },
                   {
                     "$ref": "#/components/schemas/UpdateSSEMCPServer"
@@ -6219,7 +6219,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/letta__server__rest_api__routers__v1__tools__ToolExecuteRequest"
+                "$ref": "#/components/schemas/ToolExecuteRequest"
               }
             }
           }
@@ -16084,7 +16084,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ToolExecuteRequest",
+                "$ref": "#/components/schemas/letta__schemas__mcp_server__ToolExecuteRequest",
                 "default": {
                   "args": {}
                 }
@@ -36300,7 +36300,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ToolExecuteRequest",
+                "$ref": "#/components/schemas/letta__schemas__mcp_server__ToolExecuteRequest",
                 "default": {
                   "args": {}
                 }
@@ -51122,7 +51122,7 @@
           },
           "tools": {
             "items": {
-              "$ref": "#/components/schemas/letta__schemas__agent_file__ToolSchema"
+              "$ref": "#/components/schemas/ToolSchema"
             },
             "type": "array",
             "title": "Tools",
@@ -51888,7 +51888,7 @@
           },
           "messages": {
             "items": {
-              "$ref": "#/components/schemas/MessageSchema"
+              "$ref": "#/components/schemas/letta__schemas__agent_file__MessageSchema"
             },
             "type": "array",
             "title": "Messages",
@@ -52727,7 +52727,7 @@
                       "$ref": "#/components/schemas/ApprovalReturn"
                     },
                     {
-                      "$ref": "#/components/schemas/letta__schemas__letta_message__ToolReturn"
+                      "$ref": "#/components/schemas/ToolReturn"
                     }
                   ],
                   "discriminator": {
@@ -53043,7 +53043,7 @@
                       "$ref": "#/components/schemas/ApprovalReturn"
                     },
                     {
-                      "$ref": "#/components/schemas/letta__schemas__letta_message__ToolReturn"
+                      "$ref": "#/components/schemas/ToolReturn"
                     }
                   ],
                   "discriminator": {
@@ -64560,7 +64560,7 @@
             "anyOf": [
               {
                 "items": {
-                  "$ref": "#/components/schemas/ToolReturn"
+                  "$ref": "#/components/schemas/letta__schemas__message__ToolReturn"
                 },
                 "type": "array"
               },
@@ -64676,7 +64676,7 @@
                       "$ref": "#/components/schemas/ApprovalReturn"
                     },
                     {
-                      "$ref": "#/components/schemas/ToolReturn"
+                      "$ref": "#/components/schemas/letta__schemas__message__ToolReturn"
                     }
                   ]
                 },
@@ -64822,86 +64822,9 @@
       },
       "MessageSchema": {
         "properties": {
-          "type": {
-            "anyOf": [
-              {
-                "type": "string",
-                "const": "message"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Type",
-            "description": "The message type to be created.",
-            "default": "message"
-          },
-          "role": {
-            "$ref": "#/components/schemas/MessageRole",
-            "description": "The role of the participant."
-          },
-          "content": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/LettaMessageContentUnion"
-                },
-                "type": "array"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Content",
-            "description": "The content of the message."
-          },
-          "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Name",
-            "description": "The name of the participant."
-          },
-          "otid": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Otid",
-            "description": "The offline threading id associated with this message"
-          },
-          "sender_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sender Id",
-            "description": "The id of the sender of the message, can be an identity id or agent id"
-          },
-          "batch_item_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Batch Item Id",
-            "description": "The id of the LLMBatchItem that this message is associated with"
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
           },
           "group_id": {
             "anyOf": [
@@ -64912,13 +64835,7 @@
                 "type": "null"
               }
             ],
-            "title": "Group Id",
-            "description": "The multi-agent group that the message was sent in"
-          },
-          "id": {
-            "type": "string",
-            "title": "Id",
-            "description": "Human-readable identifier for this message in the file"
+            "title": "Group Id"
           },
           "model": {
             "anyOf": [
@@ -64929,10 +64846,9 @@
                 "type": "null"
               }
             ],
-            "title": "Model",
-            "description": "The model used to make the function call"
+            "title": "Model"
           },
-          "agent_id": {
+          "name": {
             "anyOf": [
               {
                 "type": "string"
@@ -64941,23 +64857,18 @@
                 "type": "null"
               }
             ],
-            "title": "Agent Id",
-            "description": "The unique identifier of the agent"
+            "title": "Name"
           },
-          "tool_calls": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/ChatCompletionMessageFunctionToolCall-Input"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Calls",
-            "description": "The list of tool calls requested. Only applicable for role assistant."
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/LettaMessageContentUnion"
+            },
+            "type": "array",
+            "title": "Content"
           },
           "tool_call_id": {
             "anyOf": [
@@ -64968,97 +64879,37 @@
                 "type": "null"
               }
             ],
-            "title": "Tool Call Id",
-            "description": "The ID of the tool call. Only applicable for role tool."
+            "title": "Tool Call Id"
+          },
+          "tool_calls": {
+            "items": {},
+            "type": "array",
+            "title": "Tool Calls"
           },
           "tool_returns": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/ToolReturn"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Returns",
-            "description": "Tool execution return information for prior tool calls"
+            "items": {},
+            "type": "array",
+            "title": "Tool Returns"
           },
-          "created_at": {
+          "updated_at": {
             "type": "string",
-            "format": "date-time",
-            "title": "Created At",
-            "description": "The timestamp when the object was created."
-          },
-          "approve": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Approve",
-            "description": "Whether the tool has been approved"
-          },
-          "approval_request_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Approval Request Id",
-            "description": "The message ID of the approval request"
-          },
-          "denial_reason": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Denial Reason",
-            "description": "An optional explanation for the provided approval status"
-          },
-          "approvals": {
-            "anyOf": [
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/ApprovalReturn"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ToolReturn"
-                    }
-                  ]
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Approvals",
-            "description": "Approval returns for the message"
+            "title": "Updated At"
           }
         },
         "type": "object",
         "required": [
+          "created_at",
+          "group_id",
+          "model",
+          "name",
           "role",
           "content",
-          "id"
+          "tool_call_id",
+          "tool_calls",
+          "tool_returns",
+          "updated_at"
         ],
-        "title": "MessageSchema",
-        "description": "Message with human-readable ID for agent file"
+        "title": "MessageSchema"
       },
       "MessageSearchRequest": {
         "properties": {
@@ -70845,10 +70696,8 @@
             "description": "Arguments to pass to the tool"
           }
         },
-        "additionalProperties": false,
         "type": "object",
-        "title": "ToolExecuteRequest",
-        "description": "Request to execute a tool."
+        "title": "ToolExecuteRequest"
       },
       "ToolExecution": {
         "properties": {
@@ -71005,15 +70854,16 @@
       },
       "ToolReturn": {
         "properties": {
-          "tool_call_id": {
-            "anyOf": [
-              {},
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Call Id",
-            "description": "The ID for the tool call"
+          "type": {
+            "type": "string",
+            "const": "tool",
+            "title": "Type",
+            "description": "The message type to be created.",
+            "default": "tool"
+          },
+          "tool_return": {
+            "type": "string",
+            "title": "Tool Return"
           },
           "status": {
             "type": "string",
@@ -71021,8 +70871,11 @@
               "success",
               "error"
             ],
-            "title": "Status",
-            "description": "The status of the tool call"
+            "title": "Status"
+          },
+          "tool_call_id": {
+            "type": "string",
+            "title": "Tool Call Id"
           },
           "stdout": {
             "anyOf": [
@@ -71036,8 +70889,7 @@
                 "type": "null"
               }
             ],
-            "title": "Stdout",
-            "description": "Captured stdout (e.g. prints, logs) from the tool invocation"
+            "title": "Stdout"
           },
           "stderr": {
             "anyOf": [
@@ -71051,25 +70903,14 @@
                 "type": "null"
               }
             ],
-            "title": "Stderr",
-            "description": "Captured stderr from the tool invocation"
-          },
-          "func_response": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Func Response",
-            "description": "The function response string"
+            "title": "Stderr"
           }
         },
         "type": "object",
         "required": [
-          "status"
+          "tool_return",
+          "status",
+          "tool_call_id"
         ],
         "title": "ToolReturn"
       },
@@ -71254,7 +71095,7 @@
             "anyOf": [
               {
                 "items": {
-                  "$ref": "#/components/schemas/letta__schemas__letta_message__ToolReturn"
+                  "$ref": "#/components/schemas/ToolReturn"
                 },
                 "type": "array"
               },
@@ -71388,33 +71229,60 @@
       },
       "ToolSchema": {
         "properties": {
-          "args_json_schema": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Human-readable identifier for this tool in the file"
+          },
+          "tool_type": {
+            "$ref": "#/components/schemas/ToolType",
+            "description": "The type of the tool.",
+            "default": "custom"
+          },
+          "description": {
             "anyOf": [
-              {},
+              {
+                "type": "string"
+              },
               {
                 "type": "null"
               }
             ],
-            "title": "Args Json Schema"
+            "title": "Description",
+            "description": "The description of the tool."
           },
-          "created_at": {
-            "type": "string",
-            "title": "Created At"
-          },
-          "description": {
-            "type": "string",
-            "title": "Description"
-          },
-          "json_schema": {
-            "$ref": "#/components/schemas/ToolJSONSchema"
+          "source_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Type",
+            "description": "The type of the source code."
           },
           "name": {
-            "type": "string",
-            "title": "Name"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "The name of the function."
           },
-          "return_char_limit": {
-            "type": "integer",
-            "title": "Return Char Limit"
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags",
+            "description": "Metadata tags.",
+            "default": []
           },
           "source_code": {
             "anyOf": [
@@ -71425,26 +71293,121 @@
                 "type": "null"
               }
             ],
-            "title": "Source Code"
+            "title": "Source Code",
+            "description": "The source code of the function."
           },
-          "source_type": {
-            "type": "string",
-            "title": "Source Type"
+          "json_schema": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Json Schema",
+            "description": "The JSON schema of the function."
           },
-          "tags": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Tags"
+          "args_json_schema": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Args Json Schema",
+            "description": "The args JSON schema of the function."
           },
-          "tool_type": {
-            "type": "string",
-            "title": "Tool Type"
+          "return_char_limit": {
+            "type": "integer",
+            "maximum": 1000000.0,
+            "minimum": 1.0,
+            "title": "Return Char Limit",
+            "description": "The maximum number of characters in the response.",
+            "default": 50000
           },
-          "updated_at": {
-            "type": "string",
-            "title": "Updated At"
+          "pip_requirements": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PipRequirement"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pip Requirements",
+            "description": "Optional list of pip packages required by this tool."
+          },
+          "npm_requirements": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/NpmRequirement"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Npm Requirements",
+            "description": "Optional list of npm packages required by this tool."
+          },
+          "default_requires_approval": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Requires Approval",
+            "description": "Default value for whether or not executing this tool requires approval."
+          },
+          "enable_parallel_execution": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enable Parallel Execution",
+            "description": "If set to True, then this tool will potentially be executed concurrently with other tools. Default False.",
+            "default": false
+          },
+          "created_by_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By Id",
+            "description": "The id of the user that made this Tool."
+          },
+          "last_updated_by_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Updated By Id",
+            "description": "The id of the user that made this Tool."
           },
           "metadata_": {
             "anyOf": [
@@ -71456,24 +71419,29 @@
                 "type": "null"
               }
             ],
-            "title": "Metadata"
+            "title": "Metadata",
+            "description": "A dictionary of additional metadata for the tool."
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id",
+            "description": "The project id of the tool."
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
-          "args_json_schema",
-          "created_at",
-          "description",
-          "json_schema",
-          "name",
-          "return_char_limit",
-          "source_code",
-          "source_type",
-          "tags",
-          "tool_type",
-          "updated_at"
+          "id"
         ],
-        "title": "ToolSchema"
+        "title": "ToolSchema",
+        "description": "Tool with human-readable ID for agent file"
       },
       "ToolSearchRequest": {
         "properties": {
@@ -72457,7 +72425,7 @@
           "config": {
             "oneOf": [
               {
-                "$ref": "#/components/schemas/letta__schemas__mcp_server__UpdateStdioMCPServer"
+                "$ref": "#/components/schemas/UpdateStdioMCPServer"
               },
               {
                 "$ref": "#/components/schemas/letta__schemas__mcp_server__UpdateSSEMCPServer"
@@ -72566,7 +72534,13 @@
       },
       "UpdateStdioMCPServer": {
         "properties": {
-          "server_name": {
+          "mcp_server_type": {
+            "type": "string",
+            "const": "stdio",
+            "title": "Mcp Server Type",
+            "default": "stdio"
+          },
+          "command": {
             "anyOf": [
               {
                 "type": "string"
@@ -72575,25 +72549,48 @@
                 "type": "null"
               }
             ],
-            "title": "Server Name",
-            "description": "The name of the MCP server"
+            "title": "Command",
+            "description": "The command to run (MCP 'local' client will run this command)"
           },
-          "stdio_config": {
+          "args": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/StdioServerConfig"
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "The configuration for the server (MCP 'local' client will run this command)"
+            "title": "Args",
+            "description": "The arguments to pass to the command"
+          },
+          "env": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Env",
+            "description": "Environment variables to set"
           }
         },
         "additionalProperties": false,
         "type": "object",
+        "required": [
+          "command",
+          "args"
+        ],
         "title": "UpdateStdioMCPServer",
-        "description": "Update a Stdio MCP server"
+        "description": "Update schema for Stdio MCP server - all fields optional"
       },
       "UpdateStreamableHTTPMCPServer": {
         "properties": {
@@ -73401,41 +73398,40 @@
         "title": "ZAIModelSettings",
         "description": "Z.ai (ZhipuAI) model configuration (OpenAI-compatible)."
       },
-      "letta__schemas__agent_file__ToolSchema": {
+      "letta__schemas__agent_file__MessageSchema": {
         "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id",
-            "description": "Human-readable identifier for this tool in the file"
-          },
-          "tool_type": {
-            "$ref": "#/components/schemas/ToolType",
-            "description": "The type of the tool.",
-            "default": "custom"
-          },
-          "description": {
+          "type": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "const": "message"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Description",
-            "description": "The description of the tool."
+            "title": "Type",
+            "description": "The message type to be created.",
+            "default": "message"
           },
-          "source_type": {
+          "role": {
+            "$ref": "#/components/schemas/MessageRole",
+            "description": "The role of the participant."
+          },
+          "content": {
             "anyOf": [
               {
-                "type": "string"
+                "items": {
+                  "$ref": "#/components/schemas/LettaMessageContentUnion"
+                },
+                "type": "array"
               },
               {
-                "type": "null"
+                "type": "string"
               }
             ],
-            "title": "Source Type",
-            "description": "The type of the source code."
+            "title": "Content",
+            "description": "The content of the message."
           },
           "name": {
             "anyOf": [
@@ -73447,18 +73443,9 @@
               }
             ],
             "title": "Name",
-            "description": "The name of the function."
+            "description": "The name of the participant."
           },
-          "tags": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Tags",
-            "description": "Metadata tags.",
-            "default": []
-          },
-          "source_code": {
+          "otid": {
             "anyOf": [
               {
                 "type": "string"
@@ -73467,48 +73454,79 @@
                 "type": "null"
               }
             ],
-            "title": "Source Code",
-            "description": "The source code of the function."
+            "title": "Otid",
+            "description": "The offline threading id associated with this message"
           },
-          "json_schema": {
+          "sender_id": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Json Schema",
-            "description": "The JSON schema of the function."
+            "title": "Sender Id",
+            "description": "The id of the sender of the message, can be an identity id or agent id"
           },
-          "args_json_schema": {
+          "batch_item_id": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Args Json Schema",
-            "description": "The args JSON schema of the function."
+            "title": "Batch Item Id",
+            "description": "The id of the LLMBatchItem that this message is associated with"
           },
-          "return_char_limit": {
-            "type": "integer",
-            "maximum": 1000000.0,
-            "minimum": 1.0,
-            "title": "Return Char Limit",
-            "description": "The maximum number of characters in the response.",
-            "default": 50000
+          "group_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Id",
+            "description": "The multi-agent group that the message was sent in"
           },
-          "pip_requirements": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Human-readable identifier for this message in the file"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "The model used to make the function call"
+          },
+          "agent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Id",
+            "description": "The unique identifier of the agent"
+          },
+          "tool_calls": {
             "anyOf": [
               {
                 "items": {
-                  "$ref": "#/components/schemas/PipRequirement"
+                  "$ref": "#/components/schemas/ChatCompletionMessageFunctionToolCall-Input"
                 },
                 "type": "array"
               },
@@ -73516,14 +73534,26 @@
                 "type": "null"
               }
             ],
-            "title": "Pip Requirements",
-            "description": "Optional list of pip packages required by this tool."
+            "title": "Tool Calls",
+            "description": "The list of tool calls requested. Only applicable for role assistant."
           },
-          "npm_requirements": {
+          "tool_call_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Call Id",
+            "description": "The ID of the tool call. Only applicable for role tool."
+          },
+          "tool_returns": {
             "anyOf": [
               {
                 "items": {
-                  "$ref": "#/components/schemas/NpmRequirement"
+                  "$ref": "#/components/schemas/letta__schemas__message__ToolReturn"
                 },
                 "type": "array"
               },
@@ -73531,10 +73561,16 @@
                 "type": "null"
               }
             ],
-            "title": "Npm Requirements",
-            "description": "Optional list of npm packages required by this tool."
+            "title": "Tool Returns",
+            "description": "Tool execution return information for prior tool calls"
           },
-          "default_requires_approval": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "The timestamp when the object was created."
+          },
+          "approve": {
             "anyOf": [
               {
                 "type": "boolean"
@@ -73543,23 +73579,10 @@
                 "type": "null"
               }
             ],
-            "title": "Default Requires Approval",
-            "description": "Default value for whether or not executing this tool requires approval."
+            "title": "Approve",
+            "description": "Whether the tool has been approved"
           },
-          "enable_parallel_execution": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Enable Parallel Execution",
-            "description": "If set to True, then this tool will potentially be executed concurrently with other tools. Default False.",
-            "default": false
-          },
-          "created_by_id": {
+          "approval_request_id": {
             "anyOf": [
               {
                 "type": "string"
@@ -73568,10 +73591,10 @@
                 "type": "null"
               }
             ],
-            "title": "Created By Id",
-            "description": "The id of the user that made this Tool."
+            "title": "Approval Request Id",
+            "description": "The message ID of the approval request"
           },
-          "last_updated_by_id": {
+          "denial_reason": {
             "anyOf": [
               {
                 "type": "string"
@@ -73580,23 +73603,44 @@
                 "type": "null"
               }
             ],
-            "title": "Last Updated By Id",
-            "description": "The id of the user that made this Tool."
+            "title": "Denial Reason",
+            "description": "An optional explanation for the provided approval status"
           },
-          "metadata_": {
+          "approvals": {
             "anyOf": [
               {
-                "additionalProperties": true,
-                "type": "object"
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ApprovalReturn"
+                    },
+                    {
+                      "$ref": "#/components/schemas/letta__schemas__message__ToolReturn"
+                    }
+                  ]
+                },
+                "type": "array"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Metadata",
-            "description": "A dictionary of additional metadata for the tool."
-          },
-          "project_id": {
+            "title": "Approvals",
+            "description": "Approval returns for the message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "content",
+          "id"
+        ],
+        "title": "MessageSchema",
+        "description": "Message with human-readable ID for agent file"
+      },
+      "letta__schemas__mcp__UpdateStdioMCPServer": {
+        "properties": {
+          "server_name": {
             "anyOf": [
               {
                 "type": "string"
@@ -73605,79 +73649,39 @@
                 "type": "null"
               }
             ],
-            "title": "Project Id",
-            "description": "The project id of the tool."
+            "title": "Server Name",
+            "description": "The name of the MCP server"
+          },
+          "stdio_config": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StdioServerConfig"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The configuration for the server (MCP 'local' client will run this command)"
           }
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "id"
-        ],
-        "title": "ToolSchema",
-        "description": "Tool with human-readable ID for agent file"
+        "title": "UpdateStdioMCPServer",
+        "description": "Update a Stdio MCP server"
       },
-      "letta__schemas__letta_message__ToolReturn": {
+      "letta__schemas__mcp_server__ToolExecuteRequest": {
         "properties": {
-          "type": {
-            "type": "string",
-            "const": "tool",
-            "title": "Type",
-            "description": "The message type to be created.",
-            "default": "tool"
-          },
-          "tool_return": {
-            "type": "string",
-            "title": "Tool Return"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ],
-            "title": "Status"
-          },
-          "tool_call_id": {
-            "type": "string",
-            "title": "Tool Call Id"
-          },
-          "stdout": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Stdout"
-          },
-          "stderr": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Stderr"
+          "args": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Args",
+            "description": "Arguments to pass to the tool"
           }
         },
+        "additionalProperties": false,
         "type": "object",
-        "required": [
-          "tool_return",
-          "status",
-          "tool_call_id"
-        ],
-        "title": "ToolReturn"
+        "title": "ToolExecuteRequest",
+        "description": "Request to execute a tool."
       },
       "letta__schemas__mcp_server__UpdateSSEMCPServer": {
         "properties": {
@@ -73747,66 +73751,6 @@
         "title": "UpdateSSEMCPServer",
         "description": "Update schema for SSE MCP server - all fields optional"
       },
-      "letta__schemas__mcp_server__UpdateStdioMCPServer": {
-        "properties": {
-          "mcp_server_type": {
-            "type": "string",
-            "const": "stdio",
-            "title": "Mcp Server Type",
-            "default": "stdio"
-          },
-          "command": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Command",
-            "description": "The command to run (MCP 'local' client will run this command)"
-          },
-          "args": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Args",
-            "description": "The arguments to pass to the command"
-          },
-          "env": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Env",
-            "description": "Environment variables to set"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "command",
-          "args"
-        ],
-        "title": "UpdateStdioMCPServer",
-        "description": "Update schema for Stdio MCP server - all fields optional"
-      },
       "letta__schemas__mcp_server__UpdateStreamableHTTPMCPServer": {
         "properties": {
           "mcp_server_type": {
@@ -73875,6 +73819,76 @@
         "title": "UpdateStreamableHTTPMCPServer",
         "description": "Update schema for Streamable HTTP MCP server - all fields optional"
       },
+      "letta__schemas__message__ToolReturn": {
+        "properties": {
+          "tool_call_id": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Call Id",
+            "description": "The ID for the tool call"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "error"
+            ],
+            "title": "Status",
+            "description": "The status of the tool call"
+          },
+          "stdout": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stdout",
+            "description": "Captured stdout (e.g. prints, logs) from the tool invocation"
+          },
+          "stderr": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stderr",
+            "description": "Captured stderr from the tool invocation"
+          },
+          "func_response": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Func Response",
+            "description": "The function response string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "ToolReturn"
+      },
       "letta__serialize_schemas__pydantic_agent_schema__AgentSchema": {
         "properties": {
           "agent_type": {
@@ -73922,7 +73936,7 @@
           },
           "messages": {
             "items": {
-              "$ref": "#/components/schemas/letta__serialize_schemas__pydantic_agent_schema__MessageSchema"
+              "$ref": "#/components/schemas/MessageSchema"
             },
             "type": "array",
             "title": "Messages"
@@ -73992,7 +74006,7 @@
           },
           "tools": {
             "items": {
-              "$ref": "#/components/schemas/ToolSchema"
+              "$ref": "#/components/schemas/letta__serialize_schemas__pydantic_agent_schema__ToolSchema"
             },
             "type": "array",
             "title": "Tools"
@@ -74029,57 +74043,37 @@
         ],
         "title": "AgentSchema"
       },
-      "letta__serialize_schemas__pydantic_agent_schema__MessageSchema": {
+      "letta__serialize_schemas__pydantic_agent_schema__ToolSchema": {
         "properties": {
+          "args_json_schema": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Args Json Schema"
+          },
           "created_at": {
             "type": "string",
             "title": "Created At"
           },
-          "group_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Group Id"
+          "description": {
+            "type": "string",
+            "title": "Description"
           },
-          "model": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Model"
+          "json_schema": {
+            "$ref": "#/components/schemas/ToolJSONSchema"
           },
           "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "string",
             "title": "Name"
           },
-          "role": {
-            "type": "string",
-            "title": "Role"
+          "return_char_limit": {
+            "type": "integer",
+            "title": "Return Char Limit"
           },
-          "content": {
-            "items": {
-              "$ref": "#/components/schemas/LettaMessageContentUnion"
-            },
-            "type": "array",
-            "title": "Content"
-          },
-          "tool_call_id": {
+          "source_code": {
             "anyOf": [
               {
                 "type": "string"
@@ -74088,49 +74082,55 @@
                 "type": "null"
               }
             ],
-            "title": "Tool Call Id"
+            "title": "Source Code"
           },
-          "tool_calls": {
-            "items": {},
-            "type": "array",
-            "title": "Tool Calls"
+          "source_type": {
+            "type": "string",
+            "title": "Source Type"
           },
-          "tool_returns": {
-            "items": {},
+          "tags": {
+            "items": {
+              "type": "string"
+            },
             "type": "array",
-            "title": "Tool Returns"
+            "title": "Tags"
+          },
+          "tool_type": {
+            "type": "string",
+            "title": "Tool Type"
           },
           "updated_at": {
             "type": "string",
             "title": "Updated At"
+          },
+          "metadata_": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata"
           }
         },
         "type": "object",
         "required": [
+          "args_json_schema",
           "created_at",
-          "group_id",
-          "model",
+          "description",
+          "json_schema",
           "name",
-          "role",
-          "content",
-          "tool_call_id",
-          "tool_calls",
-          "tool_returns",
+          "return_char_limit",
+          "source_code",
+          "source_type",
+          "tags",
+          "tool_type",
           "updated_at"
         ],
-        "title": "MessageSchema"
-      },
-      "letta__server__rest_api__routers__v1__tools__ToolExecuteRequest": {
-        "properties": {
-          "args": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Args",
-            "description": "Arguments to pass to the tool"
-          }
-        },
-        "type": "object",
-        "title": "ToolExecuteRequest"
+        "title": "ToolSchema"
       },
       "openai__types__chat__chat_completion_message_function_tool_call_param__Function": {
         "properties": {
