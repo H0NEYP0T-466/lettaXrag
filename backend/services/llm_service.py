@@ -82,27 +82,52 @@ class LLMService:
         return chat_response.choices[0].message.content
 
     async def generate_response(self, prompt, rag_context=None, temperature=0.7, max_tokens=8192, use_memory=True, model: str = "longcat"):
-        """Generate response from LLM with optional Letta memory."""
+        """Generate response from LLM with optional Letta memory.
+
+        For all models the Letta agent (always backed by longcat) is consulted
+        first for memory-aware context.  When the requested model is *longcat*
+        the Letta response is returned directly.  For any other model the Letta
+        response is injected as additional system context so the downstream
+        provider benefits from Isabella's persistent memory without needing its
+        own Letta agent (which caused 401 / unsupported-provider errors).
+        """
         try:
             current_timestamp = datetime.now().strftime("%A, %B %d, %Y - %H:%M")
             prompt = f"[System Note: Current Time is {current_timestamp}] {prompt}"
+
+            letta_context = None
             if use_memory and letta_service.client:
-                log_info("Using Letta with memory for response")
-                letta_response = await letta_service.process_with_memory(
+                log_info("Using Letta (longcat) for memory-aware context")
+                letta_context = await letta_service.process_with_memory(
                     user_message=prompt,
                     rag_context=rag_context,
-                    model=model
                 )
-                if letta_response is not None:
-                    log_llm_response(letta_response)
-                    return letta_response
-                log_info("Letta response empty, falling back to direct LLM")
 
+            # For longcat model: the Letta response IS the final response.
+            if model == "longcat":
+                if letta_context is not None:
+                    log_llm_response(letta_context)
+                    return letta_context
+                log_info("Letta response empty for longcat, falling back to direct LLM")
+
+            # For non-longcat models (or if Letta failed): call the actual provider.
             model_config = MODELS.get(model, MODELS["longcat"])
             provider = model_config["provider"]
             model_id = model_config["model_id"]
 
             messages = [{"role": "system", "content": self.system_instruction}]
+
+            # Inject Letta memory context so the non-longcat model benefits from
+            # Isabella's persistent memory without needing its own Letta agent.
+            if letta_context:
+                messages.append({
+                    "role": "system",
+                    "content": (
+                        "The following is a memory-aware context generated from "
+                        "Isabella's conversation history and persona. Use it to "
+                        "inform your response:\n\n" + letta_context
+                    ),
+                })
 
             if rag_context and len(rag_context) > 0:
                 context_text = "You have rag system buildin and these are its retrevals:\n\n"

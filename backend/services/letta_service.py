@@ -231,13 +231,18 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
             log_info("Continuing without Letta integration")
             self.client = None
 
-    def _get_or_create_agent(self, model: str) -> Optional[str]:
-        """Return the Letta agent ID for the given model, creating it if necessary."""
-        if model in self.agent_ids:
-            return self.agent_ids[model]
+    def _get_or_create_agent(self) -> Optional[str]:
+        """Return the Letta agent ID for the single longcat agent, creating it if necessary.
 
-        model_handle = MODEL_HANDLES.get(model, MODEL_HANDLES["longcat"])
-        agent_name = f"{self.agent_name}_{model}"
+        All memory processing always runs through the longcat model so that
+        provider-specific 401 / unsupported-provider errors for Groq, Cerebras,
+        and Mistral inside the Letta server are completely avoided.
+        """
+        if "longcat" in self.agent_ids:
+            return self.agent_ids["longcat"]
+
+        model_handle = MODEL_HANDLES["longcat"]
+        agent_name = self.agent_name  # "Isabella"
 
         try:
             agents_response = self.client.agents.list(name=agent_name)
@@ -249,7 +254,7 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
                         break
 
             if existing_agent:
-                self.agent_ids[model] = existing_agent.id
+                self.agent_ids["longcat"] = existing_agent.id
                 log_info(f"Using existing Letta agent: {agent_name} (ID: {existing_agent.id})")
             else:
                 log_info(f"Creating new Letta agent: {agent_name}")
@@ -263,28 +268,28 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
                     embedding="letta/letta-free",
                     memory_blocks=memory_blocks,
                 )
-                self.agent_ids[model] = agent.id
+                self.agent_ids["longcat"] = agent.id
                 log_info(f"Created Letta agent: {agent_name} (ID: {agent.id})")
 
-            return self.agent_ids[model]
+            return self.agent_ids["longcat"]
 
         except Exception as e:
-            log_error(f"Error getting/creating Letta agent for model '{model}': {str(e)}")
+            log_error(f"Error getting/creating Letta agent: {str(e)}")
             return None
 
-    async def process_message(self, user_message, model: str = "longcat"):
-        """Process user message through Letta with memory."""
+    async def process_message(self, user_message):
+        """Process user message through the longcat Letta agent with memory."""
         try:
             if not self.client:
                 log_info("Letta not available, returning original message")
                 return None
 
-            agent_id = self._get_or_create_agent(model)
+            agent_id = self._get_or_create_agent()
             if not agent_id:
-                log_info(f"Could not get agent for model '{model}', returning original message")
+                log_info("Could not get agent, returning original message")
                 return None
 
-            log_info(f"Processing message through Letta agent (model: {model}, with memory)")
+            log_info("Processing message through Letta agent (longcat, with memory)")
 
             response = self.client.agents.messages.create(
                 agent_id=agent_id,
@@ -318,8 +323,14 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
             log_error(f"Error processing message with Letta: {str(e)}")
             return None
 
-    async def process_with_memory(self, user_message, rag_context=None, user_id="default_user", model: str = "longcat"):
-        """Process with RAG context included."""
+    async def process_with_memory(self, user_message, rag_context=None, user_id="default_user"):
+        """Process with RAG context included.
+
+        Always uses the longcat Letta agent for memory management regardless of
+        which provider model will generate the final response.  The returned
+        value is the memory-aware context that can be passed as additional
+        context to any downstream model.
+        """
         full_message = user_message
         if rag_context and len(rag_context) > 0:
             context_text = "\n\n---\nRelevant information from knowledge base:\n"
@@ -328,18 +339,16 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
             context_text += "---\n\nUse this information to help answer the user's question."
             full_message = f"{user_message}{context_text}"
 
-        return await self.process_message(full_message, model=model)
+        return await self.process_message(full_message)
 
-    def reset_agent(self, model: str = None):
-        """Reset agent memory. If model is None, resets all agents."""
+    def reset_agent(self):
+        """Reset agent memory. Resets the single longcat Letta agent."""
         try:
             if self.client:
-                models_to_reset = [model] if model else list(self.agent_ids.keys())
-                for m in models_to_reset:
-                    agent_id = self.agent_ids.pop(m, None)
-                    if agent_id:
-                        self.client.agents.delete(agent_id)
-                        log_info(f"Agent memory reset for model '{m}'")
+                agent_id = self.agent_ids.pop("longcat", None)
+                if agent_id:
+                    self.client.agents.delete(agent_id)
+                    log_info("Agent memory reset (longcat)")
         except Exception as e:
             log_error(f"Error resetting agent: {str(e)}")
 
