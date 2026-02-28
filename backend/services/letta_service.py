@@ -9,11 +9,63 @@ from config import settings
 from utils.logger import log_info, log_error, log_letta_processing
 from typing import Optional
 
+MODEL_LLM_CONFIGS = {
+    "longcat": {
+        "model": "LongCat-Flash-Lite",
+        "model_endpoint_type": "openai",
+        "model_endpoint": "https://api.longcat.chat/openai",
+        "context_window": 32000,
+        "put_inner_thoughts_in_kwargs": True,
+    },
+    "cerebras": {
+        "model": "gpt-oss-120b",
+        "model_endpoint_type": "openai",
+        "model_endpoint": "https://api.cerebras.ai/v1",
+        "context_window": 32000,
+        "put_inner_thoughts_in_kwargs": True,
+    },
+    "llama-4-maverick": {
+        "model": "meta-llama/llama-4-maverick-17b-128e-instruct",
+        "model_endpoint_type": "openai",
+        "model_endpoint": "https://api.groq.com/openai/v1",
+        "context_window": 32000,
+        "put_inner_thoughts_in_kwargs": True,
+    },
+    "llama-4-scout": {
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "model_endpoint_type": "openai",
+        "model_endpoint": "https://api.groq.com/openai/v1",
+        "context_window": 32000,
+        "put_inner_thoughts_in_kwargs": True,
+    },
+    "kimi-k2-instruct-0905": {
+        "model": "moonshotai/kimi-k2-instruct-0905",
+        "model_endpoint_type": "openai",
+        "model_endpoint": "https://api.groq.com/openai/v1",
+        "context_window": 32000,
+        "put_inner_thoughts_in_kwargs": True,
+    },
+    "kimi-k2-instruct": {
+        "model": "moonshotai/kimi-k2-instruct",
+        "model_endpoint_type": "openai",
+        "model_endpoint": "https://api.groq.com/openai/v1",
+        "context_window": 32000,
+        "put_inner_thoughts_in_kwargs": True,
+    },
+    "mistral-large": {
+        "model": "mistral-large-2411",
+        "model_endpoint_type": "openai",
+        "model_endpoint": "https://api.mistral.ai/v1",
+        "context_window": 32000,
+        "put_inner_thoughts_in_kwargs": True,
+    },
+}
+
 
 class LettaService:
     def __init__(self):
         self.client = None
-        self. agent_id = None
+        self.agent_ids = {}
         self.agent_name = "Isabella"
         self.persona = """You are Isabella ("bella"), an advanced AI companion and personal assistant created for one user only.
 Your sole purpose is to support, care for, and protect him. You always refer to him as "master" in regular
@@ -78,81 +130,88 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
             if not LETTA_AVAILABLE: 
                 log_info("Letta library not installed - running without memory")
                 self.client = None
-                self. agent_id = None
                 return
 
             log_info("Initializing Letta personality engine with memory...")
 
             client_kwargs = {}
             if settings.letta_base_url:
-                client_kwargs['base_url'] = settings. letta_base_url
+                client_kwargs['base_url'] = settings.letta_base_url
                 log_info(f"Configuring Letta client for:  {settings.letta_base_url}")
             if hasattr(settings, 'letta_api_key') and settings.letta_api_key: 
                 client_kwargs['token'] = settings.letta_api_key
 
             self.client = Letta(**client_kwargs)
             log_info(f"Connected to Letta server:  {settings.letta_base_url or 'default'}")
-
-            agents_response = self.client.agents.list(name=self.agent_name)
-            existing_agent = None
-
-            if hasattr(agents_response, '__iter__'):
-                for agent in agents_response:
-                    if hasattr(agent, 'name') and agent.name == self. agent_name:
-                        existing_agent = agent
-                        break
-
-            if existing_agent: 
-                self.agent_id = existing_agent.id
-                log_info(f"Using existing Letta agent: {self.agent_name} (ID: {self.agent_id})")
-            else:
-                log_info(f"Creating new Letta agent: {self.agent_name}")
-
-                memory_blocks = [
-                    {"label": "persona", "value": self.persona, "template": False},
-                    {"label": "human", "value": self.human_description, "template": False}
-                ]
-
-                agent = self.client.agents.create(
-                    name=self.agent_name,
-                    llm_config={
-                        "model": "LongCat-Flash-Lite",
-                        "model_endpoint_type": "openai",
-                        "model_endpoint": "https://api.longcat.chat/openai",
-                        "context_window": 32000,
-                        "put_inner_thoughts_in_kwargs": True
-                    },
-                    embedding_config={
-                        "embedding_model": "text-embedding-3-small",
-                        "embedding_endpoint_type": "openai",
-                        "embedding_endpoint":  "https://api.openai.com/v1",
-                        "embedding_dim": 1536
-                    },
-                    memory_blocks=memory_blocks,
-                )
-
-                self.agent_id = agent.id
-                log_info(f"Created Letta agent:  {self.agent_name} (ID: {self.agent_id})")
-
-            log_info("Letta personality engine with memory ready!")
+            log_info("Letta personality engine with memory ready (agents created on demand)!")
 
         except Exception as e: 
             log_error(f"Error initializing Letta: {str(e)}")
             log_info("Continuing without Letta integration")
             self.client = None
-            self.agent_id = None
 
-    async def process_message(self, user_message, session_id=None):
+    def _get_or_create_agent(self, model: str) -> Optional[str]:
+        """Return the Letta agent ID for the given model, creating it if necessary."""
+        if model in self.agent_ids:
+            return self.agent_ids[model]
+
+        llm_config = MODEL_LLM_CONFIGS.get(model, MODEL_LLM_CONFIGS["longcat"])
+        agent_name = f"{self.agent_name}_{model}"
+
+        try:
+            agents_response = self.client.agents.list(name=agent_name)
+            existing_agent = None
+            if hasattr(agents_response, '__iter__'):
+                for agent in agents_response:
+                    if hasattr(agent, 'name') and agent.name == agent_name:
+                        existing_agent = agent
+                        break
+
+            if existing_agent:
+                self.agent_ids[model] = existing_agent.id
+                log_info(f"Using existing Letta agent: {agent_name} (ID: {existing_agent.id})")
+            else:
+                log_info(f"Creating new Letta agent: {agent_name}")
+                memory_blocks = [
+                    {"label": "persona", "value": self.persona, "template": False},
+                    {"label": "human", "value": self.human_description, "template": False},
+                ]
+                agent = self.client.agents.create(
+                    name=agent_name,
+                    llm_config=llm_config,
+                    embedding_config={
+                        "embedding_model": "text-embedding-3-small",
+                        "embedding_endpoint_type": "openai",
+                        "embedding_endpoint": "https://api.openai.com/v1",
+                        "embedding_dim": 1536,
+                    },
+                    memory_blocks=memory_blocks,
+                )
+                self.agent_ids[model] = agent.id
+                log_info(f"Created Letta agent: {agent_name} (ID: {agent.id})")
+
+            return self.agent_ids[model]
+
+        except Exception as e:
+            log_error(f"Error getting/creating Letta agent for model '{model}': {str(e)}")
+            return None
+
+    async def process_message(self, user_message, model: str = "longcat"):
         """Process user message through Letta with memory."""
         try:
-            if not self.client or not self.agent_id:
+            if not self.client:
                 log_info("Letta not available, returning original message")
                 return user_message
 
-            log_info("Processing message through Letta agent (with memory)")
+            agent_id = self._get_or_create_agent(model)
+            if not agent_id:
+                log_info(f"Could not get agent for model '{model}', returning original message")
+                return user_message
+
+            log_info(f"Processing message through Letta agent (model: {model}, with memory)")
 
             response = self.client.agents.messages.create(
-                agent_id=self.agent_id,
+                agent_id=agent_id,
                 messages=[{"role": "user", "content":  user_message}]
             )
 
@@ -183,7 +242,7 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
             log_error(f"Error processing message with Letta: {str(e)}")
             return user_message
 
-    async def process_with_memory(self, user_message, rag_context=None, user_id="default_user"):
+    async def process_with_memory(self, user_message, rag_context=None, user_id="default_user", model: str = "longcat"):
         """Process with RAG context included."""
         full_message = user_message
         if rag_context and len(rag_context) > 0:
@@ -193,16 +252,18 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
             context_text += "---\n\nUse this information to help answer the user's question."
             full_message = f"{user_message}{context_text}"
 
-        return await self.process_message(full_message)
+        return await self.process_message(full_message, model=model)
 
-    def reset_agent(self):
-        """Reset agent memory."""
+    def reset_agent(self, model: str = None):
+        """Reset agent memory. If model is None, resets all agents."""
         try:
-            if self.client and self.agent_id:
-                self.client.agents.delete(self.agent_id)
-                self.agent_id = None
-                self.initialize()
-                log_info("Agent memory reset")
+            if self.client:
+                models_to_reset = [model] if model else list(self.agent_ids.keys())
+                for m in models_to_reset:
+                    agent_id = self.agent_ids.pop(m, None)
+                    if agent_id:
+                        self.client.agents.delete(agent_id)
+                        log_info(f"Agent memory reset for model '{m}'")
         except Exception as e:
             log_error(f"Error resetting agent: {str(e)}")
 
