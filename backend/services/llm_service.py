@@ -93,7 +93,7 @@ class LLMService:
                     rag_context=rag_context,
                     model=model
                 )
-                if letta_response and letta_response != prompt:
+                if letta_response is not None:
                     log_llm_response(letta_response)
                     return letta_response
                 log_info("Letta response empty, falling back to direct LLM")
