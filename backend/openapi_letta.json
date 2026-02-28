@@ -5207,13 +5207,13 @@
               "schema": {
                 "anyOf": [
                   {
-                    "$ref": "#/components/schemas/letta__schemas__mcp__UpdateStdioMCPServer"
+                    "$ref": "#/components/schemas/UpdateStdioMCPServer"
                   },
                   {
-                    "$ref": "#/components/schemas/letta__schemas__mcp__UpdateSSEMCPServer"
+                    "$ref": "#/components/schemas/UpdateSSEMCPServer"
                   },
                   {
-                    "$ref": "#/components/schemas/letta__schemas__mcp__UpdateStreamableHTTPMCPServer"
+                    "$ref": "#/components/schemas/UpdateStreamableHTTPMCPServer"
                   }
                 ],
                 "title": "Request"
@@ -51888,7 +51888,7 @@
           },
           "messages": {
             "items": {
-              "$ref": "#/components/schemas/letta__schemas__agent_file__MessageSchema"
+              "$ref": "#/components/schemas/MessageSchema"
             },
             "type": "array",
             "title": "Messages",
@@ -64822,31 +64822,38 @@
       },
       "MessageSchema": {
         "properties": {
-          "created_at": {
-            "type": "string",
-            "title": "Created At"
-          },
-          "group_id": {
+          "type": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "const": "message"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Group Id"
+            "title": "Type",
+            "description": "The message type to be created.",
+            "default": "message"
           },
-          "model": {
+          "role": {
+            "$ref": "#/components/schemas/MessageRole",
+            "description": "The role of the participant."
+          },
+          "content": {
             "anyOf": [
               {
-                "type": "string"
+                "items": {
+                  "$ref": "#/components/schemas/LettaMessageContentUnion"
+                },
+                "type": "array"
               },
               {
-                "type": "null"
+                "type": "string"
               }
             ],
-            "title": "Model"
+            "title": "Content",
+            "description": "The content of the message."
           },
           "name": {
             "anyOf": [
@@ -64857,18 +64864,100 @@
                 "type": "null"
               }
             ],
-            "title": "Name"
+            "title": "Name",
+            "description": "The name of the participant."
           },
-          "role": {
+          "otid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Otid",
+            "description": "The offline threading id associated with this message"
+          },
+          "sender_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sender Id",
+            "description": "The id of the sender of the message, can be an identity id or agent id"
+          },
+          "batch_item_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Item Id",
+            "description": "The id of the LLMBatchItem that this message is associated with"
+          },
+          "group_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Id",
+            "description": "The multi-agent group that the message was sent in"
+          },
+          "id": {
             "type": "string",
-            "title": "Role"
+            "title": "Id",
+            "description": "Human-readable identifier for this message in the file"
           },
-          "content": {
-            "items": {
-              "$ref": "#/components/schemas/LettaMessageContentUnion"
-            },
-            "type": "array",
-            "title": "Content"
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "The model used to make the function call"
+          },
+          "agent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Id",
+            "description": "The unique identifier of the agent"
+          },
+          "tool_calls": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionMessageFunctionToolCall-Input"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Calls",
+            "description": "The list of tool calls requested. Only applicable for role assistant."
           },
           "tool_call_id": {
             "anyOf": [
@@ -64879,37 +64968,97 @@
                 "type": "null"
               }
             ],
-            "title": "Tool Call Id"
-          },
-          "tool_calls": {
-            "items": {},
-            "type": "array",
-            "title": "Tool Calls"
+            "title": "Tool Call Id",
+            "description": "The ID of the tool call. Only applicable for role tool."
           },
           "tool_returns": {
-            "items": {},
-            "type": "array",
-            "title": "Tool Returns"
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ToolReturn"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Returns",
+            "description": "Tool execution return information for prior tool calls"
           },
-          "updated_at": {
+          "created_at": {
             "type": "string",
-            "title": "Updated At"
+            "format": "date-time",
+            "title": "Created At",
+            "description": "The timestamp when the object was created."
+          },
+          "approve": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approve",
+            "description": "Whether the tool has been approved"
+          },
+          "approval_request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approval Request Id",
+            "description": "The message ID of the approval request"
+          },
+          "denial_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Denial Reason",
+            "description": "An optional explanation for the provided approval status"
+          },
+          "approvals": {
+            "anyOf": [
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ApprovalReturn"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ToolReturn"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approvals",
+            "description": "Approval returns for the message"
           }
         },
         "type": "object",
         "required": [
-          "created_at",
-          "group_id",
-          "model",
-          "name",
           "role",
           "content",
-          "tool_call_id",
-          "tool_calls",
-          "tool_returns",
-          "updated_at"
+          "id"
         ],
-        "title": "MessageSchema"
+        "title": "MessageSchema",
+        "description": "Message with human-readable ID for agent file"
       },
       "MessageSearchRequest": {
         "properties": {
@@ -72308,13 +72457,13 @@
           "config": {
             "oneOf": [
               {
-                "$ref": "#/components/schemas/UpdateStdioMCPServer"
+                "$ref": "#/components/schemas/letta__schemas__mcp_server__UpdateStdioMCPServer"
               },
               {
-                "$ref": "#/components/schemas/UpdateSSEMCPServer"
+                "$ref": "#/components/schemas/letta__schemas__mcp_server__UpdateSSEMCPServer"
               },
               {
-                "$ref": "#/components/schemas/UpdateStreamableHTTPMCPServer"
+                "$ref": "#/components/schemas/letta__schemas__mcp_server__UpdateStreamableHTTPMCPServer"
               }
             ],
             "title": "Config",
@@ -72358,11 +72507,17 @@
       },
       "UpdateSSEMCPServer": {
         "properties": {
-          "mcp_server_type": {
-            "type": "string",
-            "const": "sse",
-            "title": "Mcp Server Type",
-            "default": "sse"
+          "server_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Server Name",
+            "description": "The name of the MCP server"
           },
           "server_url": {
             "anyOf": [
@@ -72374,9 +72529,9 @@
               }
             ],
             "title": "Server Url",
-            "description": "The URL of the server"
+            "description": "The URL of the server (MCP SSE client will connect to this URL)"
           },
-          "auth_header": {
+          "token": {
             "anyOf": [
               {
                 "type": "string"
@@ -72385,20 +72540,8 @@
                 "type": "null"
               }
             ],
-            "title": "Auth Header",
-            "description": "The name of the authentication header (e.g., 'Authorization')"
-          },
-          "auth_token": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Auth Token",
-            "description": "The authentication token or API key value"
+            "title": "Token",
+            "description": "The access token or API key for the MCP server (used for SSE authentication)"
           },
           "custom_headers": {
             "anyOf": [
@@ -72413,26 +72556,17 @@
               }
             ],
             "title": "Custom Headers",
-            "description": "Custom HTTP headers to include with requests"
+            "description": "Custom authentication headers as key-value pairs"
           }
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "server_url"
-        ],
         "title": "UpdateSSEMCPServer",
-        "description": "Update schema for SSE MCP server - all fields optional"
+        "description": "Update an SSE MCP server"
       },
       "UpdateStdioMCPServer": {
         "properties": {
-          "mcp_server_type": {
-            "type": "string",
-            "const": "stdio",
-            "title": "Mcp Server Type",
-            "default": "stdio"
-          },
-          "command": {
+          "server_name": {
             "anyOf": [
               {
                 "type": "string"
@@ -72441,56 +72575,39 @@
                 "type": "null"
               }
             ],
-            "title": "Command",
-            "description": "The command to run (MCP 'local' client will run this command)"
+            "title": "Server Name",
+            "description": "The name of the MCP server"
           },
-          "args": {
+          "stdio_config": {
             "anyOf": [
               {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
+                "$ref": "#/components/schemas/StdioServerConfig"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Args",
-            "description": "The arguments to pass to the command"
-          },
-          "env": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Env",
-            "description": "Environment variables to set"
+            "description": "The configuration for the server (MCP 'local' client will run this command)"
           }
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "command",
-          "args"
-        ],
         "title": "UpdateStdioMCPServer",
-        "description": "Update schema for Stdio MCP server - all fields optional"
+        "description": "Update a Stdio MCP server"
       },
       "UpdateStreamableHTTPMCPServer": {
         "properties": {
-          "mcp_server_type": {
-            "type": "string",
-            "const": "streamable_http",
-            "title": "Mcp Server Type",
-            "default": "streamable_http"
+          "server_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Server Name",
+            "description": "The name of the MCP server"
           },
           "server_url": {
             "anyOf": [
@@ -72502,7 +72619,7 @@
               }
             ],
             "title": "Server Url",
-            "description": "The URL of the server"
+            "description": "The URL path for the streamable HTTP server (e.g., 'example/mcp')"
           },
           "auth_header": {
             "anyOf": [
@@ -72541,16 +72658,13 @@
               }
             ],
             "title": "Custom Headers",
-            "description": "Custom HTTP headers to include with requests"
+            "description": "Custom authentication headers as key-value pairs"
           }
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "server_url"
-        ],
         "title": "UpdateStreamableHTTPMCPServer",
-        "description": "Update schema for Streamable HTTP MCP server - all fields optional"
+        "description": "Update a Streamable HTTP MCP server"
       },
       "UpdateSystemMessage": {
         "properties": {
@@ -73287,246 +73401,6 @@
         "title": "ZAIModelSettings",
         "description": "Z.ai (ZhipuAI) model configuration (OpenAI-compatible)."
       },
-      "letta__schemas__agent_file__MessageSchema": {
-        "properties": {
-          "type": {
-            "anyOf": [
-              {
-                "type": "string",
-                "const": "message"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Type",
-            "description": "The message type to be created.",
-            "default": "message"
-          },
-          "role": {
-            "$ref": "#/components/schemas/MessageRole",
-            "description": "The role of the participant."
-          },
-          "content": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/LettaMessageContentUnion"
-                },
-                "type": "array"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Content",
-            "description": "The content of the message."
-          },
-          "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Name",
-            "description": "The name of the participant."
-          },
-          "otid": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Otid",
-            "description": "The offline threading id associated with this message"
-          },
-          "sender_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sender Id",
-            "description": "The id of the sender of the message, can be an identity id or agent id"
-          },
-          "batch_item_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Batch Item Id",
-            "description": "The id of the LLMBatchItem that this message is associated with"
-          },
-          "group_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Group Id",
-            "description": "The multi-agent group that the message was sent in"
-          },
-          "id": {
-            "type": "string",
-            "title": "Id",
-            "description": "Human-readable identifier for this message in the file"
-          },
-          "model": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Model",
-            "description": "The model used to make the function call"
-          },
-          "agent_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Agent Id",
-            "description": "The unique identifier of the agent"
-          },
-          "tool_calls": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/ChatCompletionMessageFunctionToolCall-Input"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Calls",
-            "description": "The list of tool calls requested. Only applicable for role assistant."
-          },
-          "tool_call_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Call Id",
-            "description": "The ID of the tool call. Only applicable for role tool."
-          },
-          "tool_returns": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/ToolReturn"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tool Returns",
-            "description": "Tool execution return information for prior tool calls"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At",
-            "description": "The timestamp when the object was created."
-          },
-          "approve": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Approve",
-            "description": "Whether the tool has been approved"
-          },
-          "approval_request_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Approval Request Id",
-            "description": "The message ID of the approval request"
-          },
-          "denial_reason": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Denial Reason",
-            "description": "An optional explanation for the provided approval status"
-          },
-          "approvals": {
-            "anyOf": [
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/ApprovalReturn"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ToolReturn"
-                    }
-                  ]
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Approvals",
-            "description": "Approval returns for the message"
-          }
-        },
-        "type": "object",
-        "required": [
-          "role",
-          "content",
-          "id"
-        ],
-        "title": "MessageSchema",
-        "description": "Message with human-readable ID for agent file"
-      },
       "letta__schemas__agent_file__ToolSchema": {
         "properties": {
           "id": {
@@ -73805,19 +73679,13 @@
         ],
         "title": "ToolReturn"
       },
-      "letta__schemas__mcp__UpdateSSEMCPServer": {
+      "letta__schemas__mcp_server__UpdateSSEMCPServer": {
         "properties": {
-          "server_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Server Name",
-            "description": "The name of the MCP server"
+          "mcp_server_type": {
+            "type": "string",
+            "const": "sse",
+            "title": "Mcp Server Type",
+            "default": "sse"
           },
           "server_url": {
             "anyOf": [
@@ -73829,97 +73697,7 @@
               }
             ],
             "title": "Server Url",
-            "description": "The URL of the server (MCP SSE client will connect to this URL)"
-          },
-          "token": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Token",
-            "description": "The access token or API key for the MCP server (used for SSE authentication)"
-          },
-          "custom_headers": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Custom Headers",
-            "description": "Custom authentication headers as key-value pairs"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "UpdateSSEMCPServer",
-        "description": "Update an SSE MCP server"
-      },
-      "letta__schemas__mcp__UpdateStdioMCPServer": {
-        "properties": {
-          "server_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Server Name",
-            "description": "The name of the MCP server"
-          },
-          "stdio_config": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/StdioServerConfig"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The configuration for the server (MCP 'local' client will run this command)"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "UpdateStdioMCPServer",
-        "description": "Update a Stdio MCP server"
-      },
-      "letta__schemas__mcp__UpdateStreamableHTTPMCPServer": {
-        "properties": {
-          "server_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Server Name",
-            "description": "The name of the MCP server"
-          },
-          "server_url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Server Url",
-            "description": "The URL path for the streamable HTTP server (e.g., 'example/mcp')"
+            "description": "The URL of the server"
           },
           "auth_header": {
             "anyOf": [
@@ -73958,13 +73736,144 @@
               }
             ],
             "title": "Custom Headers",
-            "description": "Custom authentication headers as key-value pairs"
+            "description": "Custom HTTP headers to include with requests"
           }
         },
         "additionalProperties": false,
         "type": "object",
+        "required": [
+          "server_url"
+        ],
+        "title": "UpdateSSEMCPServer",
+        "description": "Update schema for SSE MCP server - all fields optional"
+      },
+      "letta__schemas__mcp_server__UpdateStdioMCPServer": {
+        "properties": {
+          "mcp_server_type": {
+            "type": "string",
+            "const": "stdio",
+            "title": "Mcp Server Type",
+            "default": "stdio"
+          },
+          "command": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Command",
+            "description": "The command to run (MCP 'local' client will run this command)"
+          },
+          "args": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Args",
+            "description": "The arguments to pass to the command"
+          },
+          "env": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Env",
+            "description": "Environment variables to set"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "command",
+          "args"
+        ],
+        "title": "UpdateStdioMCPServer",
+        "description": "Update schema for Stdio MCP server - all fields optional"
+      },
+      "letta__schemas__mcp_server__UpdateStreamableHTTPMCPServer": {
+        "properties": {
+          "mcp_server_type": {
+            "type": "string",
+            "const": "streamable_http",
+            "title": "Mcp Server Type",
+            "default": "streamable_http"
+          },
+          "server_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Server Url",
+            "description": "The URL of the server"
+          },
+          "auth_header": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auth Header",
+            "description": "The name of the authentication header (e.g., 'Authorization')"
+          },
+          "auth_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auth Token",
+            "description": "The authentication token or API key value"
+          },
+          "custom_headers": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Headers",
+            "description": "Custom HTTP headers to include with requests"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "server_url"
+        ],
         "title": "UpdateStreamableHTTPMCPServer",
-        "description": "Update a Streamable HTTP MCP server"
+        "description": "Update schema for Streamable HTTP MCP server - all fields optional"
       },
       "letta__serialize_schemas__pydantic_agent_schema__AgentSchema": {
         "properties": {
@@ -74013,7 +73922,7 @@
           },
           "messages": {
             "items": {
-              "$ref": "#/components/schemas/MessageSchema"
+              "$ref": "#/components/schemas/letta__serialize_schemas__pydantic_agent_schema__MessageSchema"
             },
             "type": "array",
             "title": "Messages"
@@ -74119,6 +74028,97 @@
           "version"
         ],
         "title": "AgentSchema"
+      },
+      "letta__serialize_schemas__pydantic_agent_schema__MessageSchema": {
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "group_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Id"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/LettaMessageContentUnion"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "tool_call_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Call Id"
+          },
+          "tool_calls": {
+            "items": {},
+            "type": "array",
+            "title": "Tool Calls"
+          },
+          "tool_returns": {
+            "items": {},
+            "type": "array",
+            "title": "Tool Returns"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "created_at",
+          "group_id",
+          "model",
+          "name",
+          "role",
+          "content",
+          "tool_call_id",
+          "tool_calls",
+          "tool_returns",
+          "updated_at"
+        ],
+        "title": "MessageSchema"
       },
       "letta__server__rest_api__routers__v1__tools__ToolExecuteRequest": {
         "properties": {
