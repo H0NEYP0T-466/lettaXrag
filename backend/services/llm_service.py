@@ -3,6 +3,13 @@ from openai import OpenAI
 from config import settings
 from utils.logger import log_info, log_error, log_llm_response
 from services.letta_service import letta_service
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
+print("LLM Service initialized with the following settings:")
+print(f"LongCat API Key: {'Set' if settings.longcat_api_key else 'Not Set'}")
+print(f"Cerebras API Key: {'Set' if settings.cerebras_api_key else 'Not Set'}")
+print(f"Groq API Key: {'Set' if settings.groq_api_key else 'Not Set'}")
+print(f"Mistral API Key: {'Set' if settings.mistral_api_key else 'Not Set'}")
 
 MODELS = {
     "longcat": {

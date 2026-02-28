@@ -37,7 +37,10 @@ const ChatInterface = () => {
           <select
             className="model-selector"
             value={selectedModel}
-            onChange={(e) => setSelectedModel(e.target.value)}
+            onChange={(e) => {
+              setSelectedModel(e.target.value);
+              console.log("Model changed to:", e.target.value);
+            }}
             title="Select base model"
           >
             {MODEL_OPTIONS.map((opt) => (

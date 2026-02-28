@@ -29,6 +29,7 @@ export const useChat = () => {
         message: content,
         session_id: sessionId,
         model: selectedModel,
+       
       });
 
       // Add Isabella's response
