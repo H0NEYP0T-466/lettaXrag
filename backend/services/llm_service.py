@@ -86,11 +86,12 @@ class LLMService:
         try:
             current_timestamp = datetime.now().strftime("%A, %B %d, %Y - %H:%M")
             prompt = f"[System Note: Current Time is {current_timestamp}] {prompt}"
-            if use_memory and letta_service.client and letta_service.agent_id and model == "longcat":
+            if use_memory and letta_service.client:
                 log_info("Using Letta with memory for response")
                 letta_response = await letta_service.process_with_memory(
                     user_message=prompt,
-                    rag_context=rag_context
+                    rag_context=rag_context,
+                    model=model
                 )
                 if letta_response and letta_response != prompt:
                     log_llm_response(letta_response)
