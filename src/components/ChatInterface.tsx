@@ -17,7 +17,7 @@ const MODEL_OPTIONS = [
 
 const ChatInterface = () => {
   const { messages, isTyping, sendMessage } = useChat();
-  const { clearMessages, isConnected, selectedModel, setSelectedModel } = useChatStore();
+  const { clearMessages, isConnected, selectedModel, setSelectedModel, useRag, setUseRag, useLetta, setUseLetta } = useChatStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -47,6 +47,22 @@ const ChatInterface = () => {
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
+          <label className="toggle-label" title="Enable/disable RAG retrieval">
+            <input
+              type="checkbox"
+              checked={useRag}
+              onChange={(e) => setUseRag(e.target.checked)}
+            />
+            <span className="toggle-text">RAG</span>
+          </label>
+          <label className="toggle-label" title="Enable/disable Letta memory">
+            <input
+              type="checkbox"
+              checked={useLetta}
+              onChange={(e) => setUseLetta(e.target.checked)}
+            />
+            <span className="toggle-text">Letta</span>
+          </label>
           <span className="status-indicator">
             [{isConnected ? 'online' : 'offline'}]
           </span>

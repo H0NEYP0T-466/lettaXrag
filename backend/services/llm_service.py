@@ -84,12 +84,15 @@ class LLMService:
     async def generate_response(self, prompt, rag_context=None, temperature=0.7, max_tokens=8192, use_memory=True, model: str = "longcat"):
         """Generate response from LLM with optional Letta memory.
 
-        For all models the Letta agent (always backed by longcat) is consulted
-        first for memory-aware context.  When the requested model is *longcat*
-        the Letta response is returned directly.  For any other model the Letta
-        response is injected as additional system context so the downstream
-        provider benefits from Isabella's persistent memory without needing its
-        own Letta agent (which caused 401 / unsupported-provider errors).
+        When *use_memory* is True the Letta agent (always backed by longcat) is
+        consulted first for memory-aware context.  When the requested model is
+        *longcat* **and** Letta succeeded, the Letta response is returned
+        directly.  For any other model the Letta response is injected as
+        additional system context so the downstream provider benefits from
+        Isabella's persistent memory without needing its own Letta agent.
+
+        When *use_memory* is False the Letta step is skipped entirely and the
+        selected provider is called directly.
         """
         try:
             current_timestamp = datetime.now().strftime("%A, %B %d, %Y - %H:%M")

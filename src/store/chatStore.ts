@@ -9,12 +9,16 @@ interface ChatState {
   isDarkMode: boolean;
   isConnected: boolean;
   selectedModel: string;
+  useRag: boolean;
+  useLetta: boolean;
   addMessage: (message: Message) => void;
   setTyping: (typing: boolean) => void;
   toggleTheme: () => void;
   setConnected: (connected: boolean) => void;
   clearMessages: () => void;
   setSelectedModel: (model: string) => void;
+  setUseRag: (useRag: boolean) => void;
+  setUseLetta: (useLetta: boolean) => void;
 }
 
 export const useChatStore = create<ChatState>()(
@@ -26,6 +30,8 @@ export const useChatStore = create<ChatState>()(
       isDarkMode: true,
       isConnected: false,
       selectedModel: 'longcat',
+      useRag: true,
+      useLetta: true,
       addMessage: (message) =>
         set((state) => ({ messages: [...state.messages, message] })),
       setTyping: (typing) => set({ isTyping: typing }),
@@ -33,6 +39,8 @@ export const useChatStore = create<ChatState>()(
       setConnected: (connected) => set({ isConnected: connected }),
       clearMessages: () => set({ messages: [] }),
       setSelectedModel: (model) => set({ selectedModel: model }),
+      setUseRag: (useRag) => set({ useRag }),
+      setUseLetta: (useLetta) => set({ useLetta }),
     }),
     {
       name: 'chat-storage',
@@ -41,6 +49,8 @@ export const useChatStore = create<ChatState>()(
         sessionId: state.sessionId,
         isDarkMode: state.isDarkMode,
         selectedModel: state.selectedModel,
+        useRag: state.useRag,
+        useLetta: state.useLetta,
       }),
       // Handle Date serialization/deserialization
       storage: {

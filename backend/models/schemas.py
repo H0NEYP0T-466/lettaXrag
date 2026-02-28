@@ -7,6 +7,8 @@ class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
     model: Optional[str] = "longcat"
+    use_rag: Optional[bool] = True
+    use_letta: Optional[bool] = True
 
 
 class ChatResponse(BaseModel):
