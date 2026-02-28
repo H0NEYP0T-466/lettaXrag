@@ -9,68 +9,44 @@ from config import settings
 from utils.logger import log_info, log_error, log_letta_processing
 from typing import Optional
 
-def _build_llm_configs():
-    return {
-        "longcat": {
-            "model": "LongCat-Flash-Lite",
-            "model_endpoint_type": "openai",
-            "model_endpoint": "https://api.longcat.chat/openai",
-            "model_endpoint_api_key": settings.longcat_api_key,
-            "context_window": 32000,
-            "put_inner_thoughts_in_kwargs": True,
-        },
-        "cerebras": {
-            "model": "gpt-oss-120b",
-            "model_endpoint_type": "openai",
-            "model_endpoint": "https://api.cerebras.ai/v1",
-            "model_endpoint_api_key": settings.cerebras_api_key,
-            "context_window": 32000,
-            "put_inner_thoughts_in_kwargs": True,
-        },
-        "llama-4-maverick": {
-            "model": "meta-llama/llama-4-maverick-17b-128e-instruct",
-            "model_endpoint_type": "openai",
-            "model_endpoint": "https://api.groq.com/openai/v1",
-            "model_endpoint_api_key": settings.groq_api_key,
-            "context_window": 32000,
-            "put_inner_thoughts_in_kwargs": True,
-        },
-        "llama-4-scout": {
-            "model": "meta-llama/llama-4-scout-17b-16e-instruct",
-            "model_endpoint_type": "openai",
-            "model_endpoint": "https://api.groq.com/openai/v1",
-            "model_endpoint_api_key": settings.groq_api_key,
-            "context_window": 32000,
-            "put_inner_thoughts_in_kwargs": True,
-        },
-        "kimi-k2-instruct-0905": {
-            "model": "moonshotai/kimi-k2-instruct-0905",
-            "model_endpoint_type": "openai",
-            "model_endpoint": "https://api.groq.com/openai/v1",
-            "model_endpoint_api_key": settings.groq_api_key,
-            "context_window": 32000,
-            "put_inner_thoughts_in_kwargs": True,
-        },
-        "kimi-k2-instruct": {
-            "model": "moonshotai/kimi-k2-instruct",
-            "model_endpoint_type": "openai",
-            "model_endpoint": "https://api.groq.com/openai/v1",
-            "model_endpoint_api_key": settings.groq_api_key,
-            "context_window": 32000,
-            "put_inner_thoughts_in_kwargs": True,
-        },
-        "mistral-large": {
-            "model": "mistral-large-2411",
-            "model_endpoint_type": "openai",
-            "model_endpoint": "https://api.mistral.ai/v1",
-            "model_endpoint_api_key": settings.mistral_api_key,
-            "context_window": 32000,
-            "put_inner_thoughts_in_kwargs": True,
-        },
-    }
+# Model handles in the format "provider_name/model_name".
+# These reference BYOK providers registered in Letta via _ensure_providers().
+MODEL_HANDLES = {
+    "longcat": "longcat/LongCat-Flash-Lite",
+    "cerebras": "cerebras/gpt-oss-120b",
+    "llama-4-maverick": "byok-groq/meta-llama/llama-4-maverick-17b-128e-instruct",
+    "llama-4-scout": "byok-groq/meta-llama/llama-4-scout-17b-16e-instruct",
+    "kimi-k2-instruct-0905": "byok-groq/moonshotai/kimi-k2-instruct-0905",
+    "kimi-k2-instruct": "byok-groq/moonshotai/kimi-k2-instruct",
+    "mistral-large": "byok-mistral/mistral-large-2411",
+}
 
-
-MODEL_LLM_CONFIGS = _build_llm_configs()
+# BYOK provider definitions to register in the Letta server.
+# Each entry includes the provider name, type, the settings attribute holding
+# the API key, and an optional custom base_url.
+_BYOK_PROVIDERS = [
+    {
+        "name": "longcat",
+        "provider_type": "openai",
+        "api_key_attr": "longcat_api_key",
+        "base_url": "https://api.longcat.chat/openai",
+    },
+    {
+        "name": "cerebras",
+        "provider_type": "cerebras",
+        "api_key_attr": "cerebras_api_key",
+    },
+    {
+        "name": "byok-groq",
+        "provider_type": "groq",
+        "api_key_attr": "groq_api_key",
+    },
+    {
+        "name": "byok-mistral",
+        "provider_type": "mistral",
+        "api_key_attr": "mistral_api_key",
+    },
+]
 
 
 class LettaService:
@@ -136,6 +112,72 @@ often unsatisfied due to high self-standards.
 Mindset & Habits: Self-disciplined, self-driven, perfectionist. Competes only with himself. Spends breaks studying intensively, often 9 p.m. to 3–4 a.m. Physically strong but often mentally exhausted. Wakes up at 4:30 a.m., spends 6+ hours traveling to and from university, attends classes till 4 p.m., then manages home duties and family factory.
 Personality & Traits: Strong sense of responsibility as eldest sibling. Motivation: make parents proud, achieve personal success, and earn enough to fulfill parents’ wishes. Independent, prefers handling problems alone. Family-oriented and vision-driven: avoids basic projects, aims for standout work. Hardworking and disciplined but very self-critical. Sometimes doubts if hard work is worth it, especially late at night. Struggles with sleep and overthinking.Loves philosophy, psychology, laws of nature and physics and questions existence. Enjoys deep conversations on abstract topics."""
 
+    def _ensure_providers(self):
+        """Register or update BYOK providers in the Letta server with the API keys
+        from settings so that agents can make authenticated calls to each provider."""
+        import httpx
+
+        base_url = (settings.letta_base_url or "http://localhost:8283").rstrip("/")
+        headers = {}
+        if getattr(settings, 'letta_api_key', None):
+            headers["Authorization"] = f"Bearer {settings.letta_api_key}"
+
+        try:
+            with httpx.Client(timeout=10.0) as http_client:
+                resp = http_client.get(f"{base_url}/v1/providers/", headers=headers)
+                if resp.status_code != 200:
+                    log_error(f"Could not list Letta providers (status {resp.status_code})")
+                    return
+
+                existing_by_name = {
+                    p["name"]: p["id"]
+                    for p in resp.json()
+                    if isinstance(p, dict) and "name" in p and "id" in p
+                }
+
+                for provider in _BYOK_PROVIDERS:
+                    api_key = getattr(settings, provider["api_key_attr"], None)
+                    if not api_key:
+                        continue  # skip providers whose keys are not configured
+
+                    name = provider["name"]
+                    if name in existing_by_name:
+                        # Update the stored API key so it always matches settings
+                        update_resp = http_client.patch(
+                            f"{base_url}/v1/providers/{existing_by_name[name]}",
+                            json={"api_key": api_key},
+                            headers=headers,
+                        )
+                        if update_resp.status_code in (200, 201):
+                            log_info(f"Updated BYOK provider '{name}'")
+                        else:
+                            log_error(
+                                f"Failed to update provider '{name}': "
+                                f"{update_resp.status_code} – {update_resp.text}"
+                            )
+                    else:
+                        create_body = {
+                            "name": name,
+                            "provider_type": provider["provider_type"],
+                            "api_key": api_key,
+                        }
+                        if "base_url" in provider:
+                            create_body["base_url"] = provider["base_url"]
+                        create_resp = http_client.post(
+                            f"{base_url}/v1/providers/",
+                            json=create_body,
+                            headers=headers,
+                        )
+                        if create_resp.status_code in (200, 201):
+                            log_info(f"Registered BYOK provider '{name}'")
+                        else:
+                            log_error(
+                                f"Failed to register provider '{name}': "
+                                f"{create_resp.status_code} – {create_resp.text}"
+                            )
+        except Exception as e:
+            log_error(f"Error ensuring Letta providers: {str(e)}")
+
     def initialize(self):
         try:
             if not LETTA_AVAILABLE: 
@@ -149,11 +191,16 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
             if settings.letta_base_url:
                 client_kwargs['base_url'] = settings.letta_base_url
                 log_info(f"Configuring Letta client for:  {settings.letta_base_url}")
-            if hasattr(settings, 'letta_api_key') and settings.letta_api_key: 
+            if getattr(settings, 'letta_api_key', None): 
                 client_kwargs['token'] = settings.letta_api_key
 
             self.client = Letta(**client_kwargs)
             log_info(f"Connected to Letta server:  {settings.letta_base_url or 'default'}")
+
+            # Register BYOK providers with the API keys from settings so that
+            # agents for non-longcat providers can authenticate correctly.
+            self._ensure_providers()
+
             log_info("Letta personality engine with memory ready (agents created on demand)!")
 
         except Exception as e: 
@@ -166,7 +213,7 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
         if model in self.agent_ids:
             return self.agent_ids[model]
 
-        llm_config = MODEL_LLM_CONFIGS.get(model, MODEL_LLM_CONFIGS["longcat"])
+        model_handle = MODEL_HANDLES.get(model, MODEL_HANDLES["longcat"])
         agent_name = f"{self.agent_name}_{model}"
 
         try:
@@ -189,13 +236,8 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
                 ]
                 agent = self.client.agents.create(
                     name=agent_name,
-                    llm_config=llm_config,
-                    embedding_config={
-                        "embedding_model": "text-embedding-3-small",
-                        "embedding_endpoint_type": "openai",
-                        "embedding_endpoint": "https://api.openai.com/v1",
-                        "embedding_dim": 1536,
-                    },
+                    model=model_handle,
+                    embedding="letta/letta-free",
                     memory_blocks=memory_blocks,
                 )
                 self.agent_ids[model] = agent.id
@@ -212,12 +254,12 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
         try:
             if not self.client:
                 log_info("Letta not available, returning original message")
-                return user_message
+                return None
 
             agent_id = self._get_or_create_agent(model)
             if not agent_id:
                 log_info(f"Could not get agent for model '{model}', returning original message")
-                return user_message
+                return None
 
             log_info(f"Processing message through Letta agent (model: {model}, with memory)")
 
@@ -247,11 +289,11 @@ Personality & Traits: Strong sense of responsibility as eldest sibling. Motivati
                 return assistant_response
             else:
                 log_info("No assistant response found in Letta response")
-                return user_message
+                return None
 
         except Exception as e:
             log_error(f"Error processing message with Letta: {str(e)}")
-            return user_message
+            return None
 
     async def process_with_memory(self, user_message, rag_context=None, user_id="default_user", model: str = "longcat"):
         """Process with RAG context included."""
