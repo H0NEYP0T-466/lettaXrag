@@ -16,6 +16,8 @@ export interface ChatRequest {
   message: string;
   session_id?: string;
   model?: string;
+  use_rag?: boolean;
+  use_letta?: boolean;
 }
 
 export interface HealthResponse {

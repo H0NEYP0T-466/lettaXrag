@@ -73,6 +73,50 @@
   border-color: #00d4ff;
 }
 
+/* Toggle Labels */
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #888;
+  user-select: none;
+}
+
+.toggle-label input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #555;
+  background: #0a0a0a;
+  cursor: pointer;
+  position: relative;
+}
+
+.toggle-label input[type="checkbox"]:checked {
+  border-color: #00ff88;
+  background: #00ff88;
+}
+
+.toggle-label input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0px;
+  width: 4px;
+  height: 8px;
+  border: solid #0a0a0a;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.toggle-text {
+  color: #00d4ff;
+  font-family: 'Courier New', monospace;
+}
+
 /* Messages Container */
 .messages-container {
   flex: 1;

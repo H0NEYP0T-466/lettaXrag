@@ -4,7 +4,7 @@ import { useChatStore } from '../store/chatStore';
 import type { Message } from '../types';
 
 export const useChat = () => {
-  const { messages, sessionId, isTyping, addMessage, setTyping, selectedModel } = useChatStore();
+  const { messages, sessionId, isTyping, addMessage, setTyping, selectedModel, useRag, useLetta } = useChatStore();
   const [error, setError] = useState<string | null>(null);
 
   const sendMessage = useCallback(async (content: string) => {
@@ -29,7 +29,8 @@ export const useChat = () => {
         message: content,
         session_id: sessionId,
         model: selectedModel,
-       
+        use_rag: useRag,
+        use_letta: useLetta,
       });
 
       // Add Isabella's response
@@ -56,7 +57,7 @@ export const useChat = () => {
     } finally {
       setTyping(false);
     }
-  }, [sessionId, selectedModel, addMessage, setTyping]);
+  }, [sessionId, selectedModel, useRag, useLetta, addMessage, setTyping]);
 
   return {
     messages,

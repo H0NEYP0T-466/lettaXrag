@@ -1,0 +1,41 @@
+MANUAL STEPS NEEDED — READ THIS
+=================================
+
+If you previously created a Letta agent ("Isabella") using a non-longcat model
+(e.g., cerebras, groq, mistral), the existing agent will still be configured to
+use that model internally.  The code reuses agents by name, so the old model
+config persists even after code changes.
+
+TO FIX THE 401 ERRORS WITH NON-LONGCAT PROVIDERS:
+
+1. Open the Letta server dashboard (usually http://localhost:8283)
+2. Delete the existing "Isabella" agent
+3. Restart the backend — a new agent will be created automatically using
+   the longcat model (which is the correct behaviour)
+
+Alternatively, you can call the reset endpoint or run this Python snippet
+against your running Letta server:
+
+    from letta_client import Letta
+    client = Letta(base_url="http://localhost:8283")
+    for agent in client.agents.list():
+        if agent.name == "Isabella":
+            client.agents.delete(agent.id)
+            print(f"Deleted agent {agent.id}")
+
+After deletion, the next chat message will automatically create a fresh
+"Isabella" agent backed by the longcat model.  All other providers (Cerebras,
+Groq, Mistral) will work because:
+
+  - Letta always uses longcat internally for memory processing
+  - The Letta context is injected as a system message to the actual provider
+  - No 401 errors because the provider API keys are used directly by llm_service,
+    not through the Letta server's BYOK registration
+
+ALSO MAKE SURE YOUR .env FILE HAS VALID API KEYS:
+
+    LONGCAT_API_KEY=your_longcat_key
+    CEREBRAS_API_KEY=your_cerebras_key
+    GROQ_API_KEY=your_groq_key
+    MISTRAL_API_KEY=your_mistral_key
+    LETTA_BASE_URL=http://localhost:8283
